@@ -1,0 +1,38 @@
+{
+	"manifest_version": 1,
+	"type": "other",
+
+	"name": "TranslateTweaks",
+	"author": "[https://theelm.net TheElm]",
+	"description": "Adds some additional functionality into the [https://www.mediawiki.org/wiki/Extension:Translate Translate extension]",
+
+	"url": "https://theelm.net/MW-TranslateTweaks",
+	"version": "1.0.0",
+	"license-name": "MIT",
+
+	"requires": {
+		"extensions": {
+			"Translate": "*"
+		}
+	},
+
+	"Hooks": {
+		"UserGetLanguageObject": "main",
+		"TranslatePrefillTranslation": "main",
+		"OutputPageAfterGetHeadLinksArray": "main"
+	},
+	"HookHandlers": {
+		"main": {
+			"class": "TranslateTweaks\\Hooks",
+			"services": [
+				"MainConfig",
+				"MessageCache",
+				"LanguageFactory",
+				"LinkRenderer"
+			]
+		}
+	},
+	"AutoloadNamespaces": {
+		"TranslateTweaks\\": "includes/"
+	}
+}
