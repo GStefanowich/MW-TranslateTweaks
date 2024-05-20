@@ -8,6 +8,7 @@ use Config;
 use IContextSource;
 use OutputPage;
 use MessageCache;
+use MessageHandle;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Languages\LanguageFactory;
@@ -17,9 +18,9 @@ use MediaWiki\Extension\Translate\PageTranslation\TranslatablePage;
 //use MediaWiki\Extension\Translate\TranslatorInterface\Aid\PrefillTranslationHook;
 
 class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArrayHook {
-	private $config;
-	private $messages;
-	private $languages;
+	private Config $config;
+	private MessageCache $messages;
+	private LanguageFactory $languages;
 
 	public function __construct(
 		Config $config,
@@ -67,7 +68,7 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 	 * @param string|null   $translation The current translation
 	 * @param MessageHandle $handle      Translation handle
 	 */
-	public function onTranslatePrefillTranslation( ?string &$translation, $handle ) {
+	public function onTranslatePrefillTranslation( ?string &$translation, MessageHandle $handle ) {
 	}
 
 	/**
@@ -82,6 +83,9 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 
 		$context = $output -> getContext();
 		$title = $context -> getTitle();
+		if ( !$title ) {
+		    return;
+		}
 
 		$page = TranslatablePage::newFromTitle( $title );
 		if ( $page -> getMarkedTag() === null ) {
@@ -133,7 +137,14 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 	}
 
 	private function getPageLanguageFromContext( IContextSource $context ) {
-		return $this -> getPageLanguage( $context -> getTitle() );
+	    $title = $context -> getTitle();
+
+        // If the Context isn't on a page (Eg; a script) return the sites Language code
+	    if ( !$title ) {
+	        return $this -> config -> get('LanguageCode');
+	    }
+
+		return $this -> getPageLanguage( $title );
 	}
 }
 
