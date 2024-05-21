@@ -1,35 +1,28 @@
 <?php
 
-namespace TranslateTweaks;
+namespace MediaWiki\Extension\TranslateTweaks;
 
 use Html;
 use Title;
 use Config;
 use IContextSource;
 use OutputPage;
-use MessageCache;
 use MessageHandle;
 use MediaWiki\MediaWikiServices;
-use MediaWiki\Linker\LinkRenderer;
-use MediaWiki\Languages\LanguageFactory;
 use MediaWiki\Hook\UserGetLanguageObjectHook;
 use MediaWiki\Hook\OutputPageAfterGetHeadLinksArrayHook;
-use MediaWiki\Extension\Translate\PageTranslation\TranslatablePage;
 //use MediaWiki\Extension\Translate\TranslatorInterface\Aid\PrefillTranslationHook;
 
 class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArrayHook {
 	private Config $config;
-	private MessageCache $messages;
-	private LanguageFactory $languages;
+	private TranslateHelper $helper;
 
 	public function __construct(
 		Config $config,
-		MessageCache $cache,
-		LanguageFactory $languages
+        TranslateHelper $helper
 	) {
-		$this -> config    = $config;
-		$this -> messages  = $cache;
-		$this -> languages = $languages;
+		$this -> config = $config;
+		$this -> helper = $helper;
 	}
 
 	/**
@@ -53,7 +46,7 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 		}
 
 		// Get the language code from the message cache
-		$language = $this -> getPageLanguageFromContext($context);
+		$language = $this -> helper -> getPageLanguageFromContext($context);
 
 		// If a language code is return (Not null)
 		if ( $language ) {
@@ -69,6 +62,9 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 	 * @param MessageHandle $handle      Translation handle
 	 */
 	public function onTranslatePrefillTranslation( ?string &$translation, MessageHandle $handle ) {
+	    $translation = 'Hello World!';
+	    //error_log(get_class($handle));
+	    return true;
 	}
 
 	/**
@@ -79,20 +75,14 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 	 * @param PageOutput $output The page being output
 	 */
 	public function onOutputPageAfterGetHeadLinksArray( &$tags, $output ) {
-		global $wgLanguageCode;
-
 		$context = $output -> getContext();
 		$title = $context -> getTitle();
 		if ( !$title ) {
 		    return;
 		}
 
-		$page = TranslatablePage::newFromTitle( $title );
-		if ( $page -> getMarkedTag() === null ) {
-			$page = TranslatablePage::isTranslationPage( $title );
-		}
-
-		if ( $page === false || $page -> getMarkedTag() === null ) {
+		$page = $this -> helper -> getPage( $title );
+		if ( !$page ) {
 			return;
 		}
 
@@ -101,15 +91,15 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 			return;
 		}
 
-		// Get the language code of the current page
-		$source = $this -> getPageLanguage( $title );
+		// Get the language code of the wiki
+		$source = $this -> config -> get('LanguageCode');
 
 		foreach($status as $code => $perc) {
 			// Get the title from the TranslatablePage and not the $title, it'll strip away any existing language code (For appending onto)
 			$path = $page -> getTitle() -> getDBkey();
 
 			// Append the language code to path as long as it's not the global wiki language
-			if ( $wgLanguageCode !== $code ) {
+			if ( $source !== $code ) {
 				$path .= '/' . $code;
 			}
 
@@ -122,30 +112,4 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 			]);
 		}
 	}
-
-	private function getPageLanguage( Title $title ) {
-		// Get the language code from the message cache
-		[ /* Discard */, $language ] = $this -> messages -> figureMessage( $title -> getText() );
-
-		// If a language is returned, and it exists in the language factory
-		if ( $language && $this -> languages -> getLanguage( $language ) ) {
-			// Set the interface language to the language code
-			return $language;
-		}
-
-		return null;
-	}
-
-	private function getPageLanguageFromContext( IContextSource $context ) {
-	    $title = $context -> getTitle();
-
-        // If the Context isn't on a page (Eg; a script) return the sites Language code
-	    if ( !$title ) {
-	        return $this -> config -> get('LanguageCode');
-	    }
-
-		return $this -> getPageLanguage( $title );
-	}
 }
-
-?>

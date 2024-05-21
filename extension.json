@@ -15,24 +15,25 @@
 			"Translate": "*"
 		}
 	},
-
+	"ServiceWiringFiles": [
+		"includes/ServiceWiring.php"
+	],
 	"Hooks": {
 		"UserGetLanguageObject": "main",
 		"TranslatePrefillTranslation": "main",
-		"OutputPageAfterGetHeadLinksArray": "main"
+		"OutputPageAfterGetHeadLinksArray": "main",
+		"ApiOpenSearchSuggest": "main"
 	},
 	"HookHandlers": {
 		"main": {
-			"class": "TranslateTweaks\\Hooks",
+			"class": "MediaWiki\\Extension\\TranslateTweaks\\Hooks",
 			"services": [
 				"MainConfig",
-				"MessageCache",
-				"LanguageFactory",
-				"LinkRenderer"
+				"ExtTranslateTweaks"
 			]
 		}
 	},
 	"AutoloadNamespaces": {
-		"TranslateTweaks\\": "includes/"
+		"MediaWiki\\Extension\\TranslateTweaks\\": "includes/"
 	}
 }
