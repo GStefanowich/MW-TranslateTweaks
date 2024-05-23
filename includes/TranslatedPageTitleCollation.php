@@ -2,7 +2,6 @@
 
 namespace MediaWiki\Extension\TranslateTweaks;
 
-use Title;
 use Collation;
 
 class TranslatedPageTitleCollation extends Collation {

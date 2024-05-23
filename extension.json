@@ -16,6 +16,14 @@
 		}
 	},
 	"callback": "MediaWiki\\Extension\\TranslateTweaks\\TranslateTweaks::extensionRegister",
+	
+	"config": {
+		"TranslateTweaksForceNamespace": {
+			"value": true,
+			"description": "Forces the translated title of namespaced pages to also contain the translated namespace."
+		}
+	},
+	
 	"ServiceWiringFiles": [
 		"includes/ServiceWiring.php"
 	],
@@ -23,6 +31,8 @@
 		"UserGetLanguageObject": "main",
 		"TranslatePrefillTranslation": "main",
 		"OutputPageAfterGetHeadLinksArray": "main",
+
+		"MultiContentSave": "main",
 
 		"OutputPageMakeCategoryLinks": "categories",
 		"CategoryViewer::generateLink": "categories",
@@ -46,5 +56,10 @@
 	},
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\TranslateTweaks\\": "includes/"
+	},
+	"MessagesDirs": {
+		"TranslateTweaks": [
+			"i18n"
+		]
 	}
 }

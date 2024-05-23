@@ -2,19 +2,25 @@
 
 namespace MediaWiki\Extension\TranslateTweaks\Hooks;
 
+use User;
 use Html;
+use MediaWiki\Revision\RenderedRevision;
+use MediaWiki\User\UserIdentity;
+use Status;
+use TextContent;
 use Title;
 use Config;
 use IContextSource;
-use OutputPage;
+use CommentStoreComment;
 use MessageHandle;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Hook\UserGetLanguageObjectHook;
 use MediaWiki\Hook\OutputPageAfterGetHeadLinksArrayHook;
+use MediaWiki\Storage\Hook\MultiContentSaveHook;
 //use MediaWiki\Extension\Translate\TranslatorInterface\Aid\PrefillTranslationHook;
 use MediaWiki\Extension\TranslateTweaks\TranslateHelper;
+use Wikimedia\Message\MessageValue;
 
-class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArrayHook {
+class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArrayHook, MultiContentSaveHook {
 	private Config $config;
 	private TranslateHelper $helper;
 
@@ -31,9 +37,9 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 	 *   Operates if UniversalLanguageSelect is disabled for signed-out users, users cannot change the interface language
 	 *   the interface will always be in English despite the content being in another language, so this fixes that
 	 *
-	 * @param User           Object of signed-in or signed-out page viewer
-	 * @param string         Ref to the interface code
-	 * @param IContextSource Current view context
+	 * @param User           $user    Object of signed-in or signed-out page viewer
+	 * @param string         $code    Ref to the interface code
+	 * @param IContextSource $context Current view context
 	 */
 	public function onUserGetLanguageObject( $user, &$code, $context ) {
 		// Check if the UniversalLanguageSelector is Enabled and Allowed for Anonymous Users
@@ -57,14 +63,13 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 	}
 
 	/**
-	 * TODO:
+	 * TODO: Find out why this doesn't fill out on the frontend (JavaScript issue maybe?)
 	 *
 	 * @param string|null   $translation The current translation
 	 * @param MessageHandle $handle      Translation handle
 	 */
 	public function onTranslatePrefillTranslation( ?string &$translation, MessageHandle $handle ) {
 	    $translation = 'Hello World!';
-	    //error_log(get_class($handle));
 	    return true;
 	}
 
@@ -113,4 +118,65 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 			]);
 		}
 	}
+
+    /**
+     * Run verification on saved translations
+     * 
+     * @param RenderedRevision     $renderedRevision
+     * @param UserIdentity         $user
+     * @param CommentStoreComment $summary
+     * @param $flags
+     * @param Status $status
+     * @return bool
+     */
+	public function onMultiContentSave( $renderedRevision, $user, $summary, $flags, $status ) {
+	    $record = $renderedRevision -> getRevision();
+	    $page = $record -> getPageAsLinkTarget();
+
+	    // Only when saving Translations
+	    if ( !$page -> inNamespace(NS_TRANSLATIONS) ) {
+	        return true;
+	    }
+
+        // When translating Page Titles, we want to ensure the translation has the proper Namespace
+        if ( preg_match( '/^(.+)\/Page display title(\/[a-z-]+)?$/', $page -> getText() ) ) {
+
+            // If this check is disabled
+            if ( !$this -> config -> get('TranslateTweaksForceNamespace') ) {
+                return true;
+            }
+
+            // If the page being translated is in the ROOT Namespace
+            $title = Title::newFromText( $page -> getText() );
+            if ( !$title -> inNamespace(NS_MAIN) ) {
+
+                // Get the language code for the saved translation
+                $languageCode = $this -> helper -> getPageLanguage( $title );
+
+                $slots = $record -> getSlots();
+
+                foreach ($slots -> getSlots() as $slot) {
+                    $content = $slot -> getContent();
+
+                    if ( $content instanceof TextContent ) {
+                        // Parse the translated title to check for the Translated version of the Namespace
+                        $translatedTitle = $this -> helper -> parseTitle( $content -> getText(), $languageCode );
+
+                        // If the translated version Namespace doesn't match the English namespace
+                        if ( $translatedTitle -> getNamespace() !== $title -> getNamespace() ) {
+                            // Get the language so we can check the text of what the prefix should be
+                            $language = $this -> helper -> getLanguage( $languageCode );
+
+                            // Error out to the user about the change
+                            $status -> fatal(new MessageValue('translate-tweaks-bad-namespace-title', [ $language -> getNsText( $title -> getNamespace() ) . ':' ]));
+
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
 }

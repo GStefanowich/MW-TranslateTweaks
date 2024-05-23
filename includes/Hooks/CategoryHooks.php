@@ -2,14 +2,16 @@
 
 namespace MediaWiki\Extension\TranslateTweaks\Hooks;
 
-use Html;
-use MediaWiki\Extension\TranslateTweaks\TranslateTweaks;
 use Title;
+use MediaWiki\Extension\TranslateTweaks\TranslateTweaks;
+use MediaWiki\Hook\CategoryViewer__generateLinkHook;
+use MediaWiki\Hook\Collation__factoryHook;
+use MediaWiki\Hook\OutputPageMakeCategoryLinksHook;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Extension\TranslateTweaks\TranslateHelper;
 use MediaWiki\Extension\TranslateTweaks\TranslatedPageTitleCollation;
 
-class CategoryHooks {
+class CategoryHooks implements OutputPageMakeCategoryLinksHook, CategoryViewer__generateLinkHook, Collation__factoryHook {
     private LinkRenderer $links;
     private TranslateHelper $helper;
 
@@ -21,7 +23,7 @@ class CategoryHooks {
         $this -> helper = $helper;
     }
 
-    public function onOutputPageMakeCategoryLinks( &$out, $categories, &$links ) {
+    public function onOutputPageMakeCategoryLinks( $out, $categories, &$links ) {
         // Get the pages title
         $title = $out -> getTitle();
         if ( !$title ) {
