@@ -12,7 +12,7 @@ There are some things about the Translate Extension that don't offer a full and 
 
 # Implementations
 
-## User Interface Language
+## User Interface Language (in [Hooks.php](https://github.com/GStefanowich/MW-TranslateTweaks/blob/main/includes/Hooks/Hooks.php))
 
 This Extension changes the Interface Language for users that are Signed Out (If `$wgULSAnonCanChangeLanguage` from [Universal Language Selector](https://www.mediawiki.org/wiki/Extension:UniversalLanguageSelector) is disabled). The interface language is changed to use that of the pages content. If visiting a `/de` page the interface will change to German, if visiting a `/fr` page the interface will change to French, and so on (To any languages Mediawiki supports). This will mimic the functionality of the `?uselang` query parameter (Without having to specify it)
 
@@ -30,7 +30,7 @@ Instead, we want to show the interface in Dutch to Dutch visitors, and in German
 
 ----
 
-## Alternative links
+## Alternative links (in [Hooks.php](https://github.com/GStefanowich/MW-TranslateTweaks/blob/main/includes/Hooks/Hooks.php))
 
 This extension will add `<link rel="alternate" href="..." hreflang="fr"/>` tags to the `<head></head>` of the page content. This allows for search engines to discover translated versions of pages instead of treating the different pages as entirely different content.
 
@@ -40,7 +40,7 @@ This extension will add `<link rel="alternate" href="..." hreflang="fr"/>` tags 
 
 ----
 
-## Localized Category Names
+## Localized Category Names (in [CategoryHooks.php](https://github.com/GStefanowich/MW-TranslateTweaks/blob/main/includes/Hooks/CategoryHooks.php))
 
 When operating a single-language wiki, namespaces are always in that language. This doesn't change when a wiki become multi-language, namespaces will always been in the primary language and categories just become more complex.
 
@@ -53,6 +53,22 @@ Every wiki page shows that pages categories at the bottom of the page, so while 
 - `OutputPageMakeCategoryLinks`
 - `CategoryViewer::generateLink`
 - `Collation::factory`
+
+----
+
+## Localized Namespace Titles (in [Hooks.php](https://github.com/GStefanowich/MW-TranslateTweaks/blob/main/includes/Hooks/Hooks.php))
+
+The Translate Extension offers translating sections of the page, but also allows translation administrators to enable translating page titles. This allows your `Bread` page to become the `Brood` page for a translated version. This functionality also works in non-main namespaces as well such as `Category` or `Template`. Translating Template names is purely cosmetic as it doesn't introduce any additional template calls like `{{Brood}}`, but cosmetic is exactly what we want for the `Category` namespace.
+
+With this setting enabled (`true` by default), translators will be required to enter the translated namespace as part of the translation otherwise it will fail. `Category:Animals` won't be able to be translated as `Tiere` but will be required to be saved as `Kategorie:Tiere` (in German).
+
+### Configurations
+
+- `$TranslateTweaksForceNamespace`: `true`
+
+### Hooks Used
+
+- `MultiContentSave`
 
 ----
 
