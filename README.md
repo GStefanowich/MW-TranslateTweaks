@@ -42,7 +42,7 @@ This extension will add `<link rel="alternate" href="..." hreflang="fr"/>` tags 
 
 ## Localized Category Names (in [CategoryHooks.php](https://github.com/GStefanowich/MW-TranslateTweaks/blob/main/includes/Hooks/CategoryHooks.php))
 
-When operating a single-language wiki, namespaces are always in that language. This doesn't change when a wiki become multi-language, namespaces will always been in the primary language and categories just become more complex.
+When operating a single-language wiki, namespaces are always in that language. This doesn't change when a wiki become multi-language, namespaces will always be in the primary language and categories just become more complex.
 
 Usually the go-to implementation for applying categories is to append the parser function `{{#translation:}}`, which gives us `[[Category:Cats{{#translation:}}]]`. This will put our main page into `Cats`, `en` into `Cats/en`, `nl` into `Cats/nl`, and so forth.
 
