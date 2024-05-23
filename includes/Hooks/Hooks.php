@@ -1,6 +1,6 @@
 <?php
 
-namespace MediaWiki\Extension\TranslateTweaks;
+namespace MediaWiki\Extension\TranslateTweaks\Hooks;
 
 use Html;
 use Title;
@@ -12,6 +12,7 @@ use MediaWiki\MediaWikiServices;
 use MediaWiki\Hook\UserGetLanguageObjectHook;
 use MediaWiki\Hook\OutputPageAfterGetHeadLinksArrayHook;
 //use MediaWiki\Extension\Translate\TranslatorInterface\Aid\PrefillTranslationHook;
+use MediaWiki\Extension\TranslateTweaks\TranslateHelper;
 
 class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArrayHook {
 	private Config $config;
@@ -46,7 +47,7 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 		}
 
 		// Get the language code from the message cache
-		$language = $this -> helper -> getPageLanguageFromContext($context);
+		$language = $this -> helper -> getPageLanguageFromContext( $context );
 
 		// If a language code is return (Not null)
 		if ( $language ) {
@@ -94,7 +95,7 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 		// Get the language code of the wiki
 		$source = $this -> config -> get('LanguageCode');
 
-		foreach($status as $code => $perc) {
+		foreach( $status as $code => $percentage ) {
 			// Get the title from the TranslatablePage and not the $title, it'll strip away any existing language code (For appending onto)
 			$path = $page -> getTitle() -> getDBkey();
 
@@ -104,7 +105,7 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 			}
 
 			// Generate a new title object with the title inside of the title namespace
-			$href = Title::makeTitle($title -> getNamespace(), $path);
+			$href = Title::makeTitle( $title -> getNamespace(), $path );
 			$tags[] = Html::rawElement('link', [
 				'rel'      => 'alternate',
 				'href'     => $href -> getFullURL(),

@@ -40,13 +40,19 @@ This extension will add `<link rel="alternate" href="..." hreflang="fr"/>` tags 
 
 ----
 
-## TODO: Localized Category Names
+## Localized Category Names
 
 When operating a single-language wiki, namespaces are always in that language. This doesn't change when a wiki become multi-language, namespaces will always been in the primary language and categories just become more complex.
 
 Usually the go-to implementation for applying categories is to append the parser function `{{#translation:}}`, which gives us `[[Category:Cats{{#translation:}}]]`. This will put our main page into `Cats`, `en` into `Cats/en`, `nl` into `Cats/nl`, and so forth.
 
 Every wiki page shows that pages categories at the bottom of the page, so while English users will see nice categories like `Cats` or `Dogs`, `nl` users will see `Cats/nl` or `Dogs/nl`. This isn't helpful in the slightest for users that don't speak the source-language of the wiki (In this case, English).
+
+### Hooks Used
+
+- `OutputPageMakeCategoryLinks`
+- `CategoryViewer::generateLink`
+- `Collation::factory`
 
 ----
 

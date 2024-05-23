@@ -15,6 +15,7 @@
 			"Translate": "*"
 		}
 	},
+	"callback": "MediaWiki\\Extension\\TranslateTweaks\\TranslateTweaks::extensionRegister",
 	"ServiceWiringFiles": [
 		"includes/ServiceWiring.php"
 	],
@@ -22,13 +23,23 @@
 		"UserGetLanguageObject": "main",
 		"TranslatePrefillTranslation": "main",
 		"OutputPageAfterGetHeadLinksArray": "main",
-		"ApiOpenSearchSuggest": "main"
+
+		"OutputPageMakeCategoryLinks": "categories",
+		"CategoryViewer::generateLink": "categories",
+		"Collation::factory": "categories"
 	},
 	"HookHandlers": {
 		"main": {
-			"class": "MediaWiki\\Extension\\TranslateTweaks\\Hooks",
+			"class": "MediaWiki\\Extension\\TranslateTweaks\\Hooks\\Hooks",
 			"services": [
 				"MainConfig",
+				"ExtTranslateTweaks"
+			]
+		},
+		"categories": {
+			"class": "MediaWiki\\Extension\\TranslateTweaks\\Hooks\\CategoryHooks",
+			"services": [
+				"LinkRenderer",
 				"ExtTranslateTweaks"
 			]
 		}
