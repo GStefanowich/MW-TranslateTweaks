@@ -2,6 +2,8 @@
 
 namespace MediaWiki\Extension\TranslateTweaks;
 
+use MalformedTitleException;
+use MWException;
 use Title;
 use TitleParser;
 use TitleValue;
@@ -37,17 +39,38 @@ class TranslateHelper {
         $this -> languages = $languages;
     }
 
+    /**
+     * Get the language object for a given language code
+     * 
+     * @param string $languageCode
+     * @return Language|null
+     */
     public function getLanguage( string $languageCode ): ?Language {
-        // Set the interface language to the language code
-        return $this -> languages -> getLanguage( $languageCode );
+        try {
+
+            // Set the interface language to the language code
+            return $this -> languages -> getLanguage( $languageCode );
+
+        } catch (MWException) {
+
+            // Eat the exception if the language code is invalid, return null
+            return null;
+
+        }
     }
 
+    /**
+     * Read the language code from a URL request path
+     * 
+     * @param $path
+     * @return string|null
+     */
     public function getPathLanguage( $path ): ?string {
         // Get the language code from the message cache
         [ /* Discard */, $language ] = $this -> messages -> figureMessage( $path );
 
         // If a language is returned, and it exists in the language factory
-        if ( $language && $this -> languages -> getLanguage( $language ) ) {
+        if ( $language && $this -> getLanguage( $language ) ) {
             // Set the interface language to the language code
             return $language;
         }
@@ -57,6 +80,7 @@ class TranslateHelper {
 
     /**
      * Detect the LanguageCode using the page title
+     *
      * @param Title $title
      * @return ?string A language code, if the title contains one
      */
@@ -64,17 +88,31 @@ class TranslateHelper {
         return $this -> getPathLanguage( $title -> getText() );
     }
 
-    public function getPageLanguageFromContext( IContextSource $context ) {
+    /**
+     * Get the LanguageCode being used in the provided Context
+     *  falls back to the main wiki language if no page is being viewed
+     * 
+     * @param IContextSource $context
+     * @return ?string
+     * @throws MWException If the language is invalid
+     */
+    public function getPageLanguageFromContext( IContextSource $context ): ?string {
         $title = $context -> getTitle();
 
         // If the Context isn't on a page (Eg; a script) return the sites Language code
         if ( !$title ) {
-            return $this -> config -> get('LanguageCode');
+            return (string) $this -> config -> get('LanguageCode');
         }
 
         return $this -> getPageLanguage( $title );
     }
 
+    /**
+     * Get a Translatable Wiki Page using a link to the page, or null if the given title is not translatable
+     * 
+     * @param LinkTarget $title
+     * @return ?TranslatablePage
+     */
     public function getPage( LinkTarget $title ): ?TranslatablePage {
         // TranslatePage::newFromTitle requires a 'Title', 'TitleValue' not allowed
         if ( !( $title instanceof Title ) ) {
@@ -98,6 +136,13 @@ class TranslateHelper {
         return $page;
     }
 
+    /**
+     * Fetch the Translated 
+     * 
+     * @param LinkTarget $title
+     * @return LinkTarget
+     * @throws MalformedTitleException
+     */
     public function getTranslatedTitle( LinkTarget $title ): LinkTarget {
         // Get the language of the current page
         $languageCode = $this -> getPageLanguage( $title );
@@ -117,10 +162,12 @@ class TranslateHelper {
 
     /**
      * Parse a string title using the TitleParser of the given Language
+     *
      * @param string $title
      * @param string $languageCode
-     * @param int $index
+     * @param ?int $index
      * @return TitleValue
+     * @throws MalformedTitleException
      */
     public function parseTitle( string $title, string $languageCode, ?int $index = null ): LinkTarget {
         $parser = $this -> getTitleParser( $languageCode );
@@ -134,6 +181,7 @@ class TranslateHelper {
 
     /**
      * Create a TitleParser for a language that isn't for the $wgLanguageCode (The language of the whole wiki)
+     *
      * @param string $languageCode
      * @return ?TitleParser
      */
@@ -141,7 +189,7 @@ class TranslateHelper {
         $parser = $this -> titleParser[ $languageCode ] ?? null;
 
         if ( !$parser ) {
-            $language = $this -> languages -> getLanguage( $languageCode );
+            $language = $this -> getLanguage( $languageCode );
 
             if ( !$language ) {
                 return null;

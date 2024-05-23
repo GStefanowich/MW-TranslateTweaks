@@ -158,15 +158,19 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
                 foreach ($slots -> getSlots() as $slot) {
                     $content = $slot -> getContent();
 
-                    if ( $content instanceof TextContent ) {
-                        // Parse the translated title to check for the Translated version of the Namespace
-                        $translatedTitle = $this -> helper -> parseTitle( $content -> getText(), $languageCode );
+                    if ( !$content instanceof TextContent ) {
+                        continue;
+                    }
 
-                        // If the translated version Namespace doesn't match the English namespace
-                        if ( $translatedTitle -> getNamespace() !== $title -> getNamespace() ) {
-                            // Get the language so we can check the text of what the prefix should be
-                            $language = $this -> helper -> getLanguage( $languageCode );
+                    // Parse the translated title to check for the Translated version of the Namespace
+                    $translatedTitle = $this -> helper -> parseTitle( $content -> getText(), $languageCode );
 
+                    // If the translated version Namespace doesn't match the English namespace
+                    if ( $translatedTitle -> getNamespace() !== $title -> getNamespace() ) {
+                        // Get the language so we can check the text of what the prefix should be
+                        $language = $this -> helper -> getLanguage( $languageCode );
+
+                        if ( $language ) {
                             // Error out to the user about the change
                             $status -> fatal(new MessageValue('translate-tweaks-bad-namespace-title', [ $language -> getNsText( $title -> getNamespace() ) . ':' ]));
 
