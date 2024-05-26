@@ -72,6 +72,20 @@ With this setting enabled (`true` by default), translators will be required to e
 
 ----
 
+## Copy Robot Policies to Translated Pages (in [Hooks.php](https://github.com/GStefanowich/MW-TranslateTweaks/blob/main/includes/Hooks/Hooks.php))
+
+Pages can be configured for robot crawlers using `$wgArticleRobotPolicies`, which outputs a `<meta name="robots" content="..."/>` tag when visiting that page. The array keys are the Pages paths, and don't support any kind of wildcard. So to configure a page and all of its language variants we'd have to specify each one in the array, which can add up and is just a lot of unnecessary work.
+
+### Considerations
+
+Rather than iterating the `ArticleRobotPolicies` config, we're using the `ArticleParserOptions` hook that runs before `Article::generateContentOutput` and `Article::doOutputMetaData`, where the robot meta tag is outputted. Iterating the config option could make a lot of database calls for each entry to get its translated pages, so instead we save by running that database call on an individual page basis.
+
+### Hooks Used
+
+- `ArticleParserOptions`
+
+----
+
 ## TODO: Prefilled Translations
 
 Some translations may be considered "Common Translations". Since the Translate Extension breaks down translations into translatable chunks a translator may end up having to translate single word (or small phrased) translations hundreds to thousands of times. Have a game wiki with Item pages where you have the "Description" heading, and your game has 9,000 items? Well that's 9,000 repeat monotonous translations.

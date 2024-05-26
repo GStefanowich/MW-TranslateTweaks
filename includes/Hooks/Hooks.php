@@ -2,6 +2,9 @@
 
 namespace MediaWiki\Extension\TranslateTweaks\Hooks;
 
+use Article;
+use MediaWiki\Page\Hook\ArticleParserOptionsHook;
+use ParserOptions;
 use User;
 use Html;
 use MediaWiki\Revision\RenderedRevision;
@@ -20,7 +23,7 @@ use MediaWiki\Storage\Hook\MultiContentSaveHook;
 use MediaWiki\Extension\TranslateTweaks\TranslateHelper;
 use Wikimedia\Message\MessageValue;
 
-class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArrayHook, MultiContentSaveHook {
+class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArrayHook, MultiContentSaveHook, ArticleParserOptionsHook {
 	private Config $config;
 	private TranslateHelper $helper;
 
@@ -171,5 +174,34 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
         }
 
         return true;
+    }
+
+    /**
+     * After getting the ParserOptions for an Article, check if that Article is in the RobotPolicies, and copy the policy to translated pages
+     *   $wgArticleRobotPolicies doesn't support wild cards, and translated pages can really add up. This method only runs once per subpage,
+     *   it'll check on translated pages such as "/nl", and check the root page. It won't run during configuration to check the root page and apply to all subpages
+     * 
+     * @param Article $article
+     * @param ParserOptions $opts
+     * @return void
+     */
+    public function onArticleParserOptions( Article $article, ParserOptions $opts ): void {
+        global $wgArticleRobotPolicies; // Could use $this -> config but a setter isn't available
+
+        // Convert the translated path to get the root TranslatablePage
+        $title = $article -> getTitle();
+        $translated = $this -> helper -> getPage( $title );
+
+        // If the Article is a TranslatablePage
+        if ( $translated ) {
+            // Check the source page if it has a present RobotPolicy
+            $source = $translated -> getTitle() -> getText();
+            $policy = $wgArticleRobotPolicies[ $source ] ?? null;
+
+            // Apply the policy to the current (translated) article
+            if ( $policy ) {
+                $wgArticleRobotPolicies[ $title -> getText() ] = $policy;
+            }
+        }
     }
 }

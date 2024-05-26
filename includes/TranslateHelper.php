@@ -3,6 +3,7 @@
 namespace MediaWiki\Extension\TranslateTweaks;
 
 use MalformedTitleException;
+use MediaWiki\MainConfigNames;
 use MWException;
 use Title;
 use TitleParser;
@@ -101,7 +102,7 @@ class TranslateHelper {
 
         // If the Context isn't on a page (Eg; a script) return the sites Language code
         if ( !$title ) {
-            return (string) $this -> config -> get('LanguageCode');
+            return (string) $this -> config -> get( MainConfigNames::LanguageCode );
         }
 
         return $this -> getPageLanguage( $title );

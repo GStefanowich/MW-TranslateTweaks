@@ -32,6 +32,8 @@
 		"TranslatePrefillTranslation": "main",
 		"OutputPageAfterGetHeadLinksArray": "main",
 
+		"ArticleParserOptions": "main",
+
 		"MultiContentSave": "main",
 
 		"OutputPageMakeCategoryLinks": "categories",
