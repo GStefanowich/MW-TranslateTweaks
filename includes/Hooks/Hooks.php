@@ -92,29 +92,18 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 			return;
 		}
 
-		$status = $page -> getTranslationPercentages();
+		$status = $page -> getTranslationPages();
 		if ( !$status ) {
 			return;
 		}
 
-		// Get the language code of the wiki
-		$source = $this -> config -> get('LanguageCode');
-
-		foreach( $status as $code => $percentage ) {
-			// Get the title from the TranslatablePage and not the $title, it'll strip away any existing language code (For appending onto)
-			$path = $page -> getTitle() -> getDBkey();
-
-			// Append the language code to path as long as it's not the global wiki language
-			if ( $source !== $code ) {
-				$path .= '/' . $code;
-			}
-
+		foreach( $status as $path ) {
 			// Generate a new title object with the title inside of the title namespace
 			$href = Title::makeTitle( $title -> getNamespace(), $path );
 			$tags[] = Html::rawElement('link', [
 				'rel'      => 'alternate',
 				'href'     => $href -> getFullURL(),
-				'hreflang' => $code
+				'hreflang' => $this -> helper -> getPathLanguage( $path )
 			]);
 		}
 	}
