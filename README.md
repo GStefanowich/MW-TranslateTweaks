@@ -64,7 +64,7 @@ With this setting enabled (`true` by default), translators will be required to e
 
 ### Configurations
 
-- `$TranslateTweaksForceNamespace`: `true`
+- `$wgTranslateTweaksForceNamespace`: `true`
 
 ### Hooks Used
 
