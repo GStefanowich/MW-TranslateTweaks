@@ -121,3 +121,24 @@ How should a search function? Should only pages in the Users language be searcha
 - `ApiOpenSearchSuggest`
 
 Considerations also need to be made for CirrusSearch
+
+----
+
+# Other Considerations
+
+## Passing Translations into Templates
+
+It is common to create Templates that help with formatting (Maybe your wiki has a `{{Quote}}` template). The Translate extension frequently breaks passing translations into Templates due to [how untranslated content is escaped](https://github.com/wikimedia/mediawiki-extensions-Translate/blob/8ef845872821c47bab1977226efa3ab22e43e484/src/PageTranslation/TranslationUnit.php#L211-L215).
+
+When a page is partially translated, the language is set on the html attribute `<html lang="en">`, content that untranslated and not yet available in the language get wrapped in either a **div** or a **span** depending on if the content is inlined or not, as seen in the code below. This allows website crawlers and screen readers to know about a change in language.
+
+```php
+if ( $this -> canWrap() && $attributes ) {
+    $tag = $this -> isInline() ? 'span' : 'div';
+    $content = $this -> isInline() ? $content : "\n$content\n";
+    $content = Html::rawElement( $tag, $attributes, $content );
+}
+```
+
+Since the content is wrapped, untranslated content has changed from something like `{{Quote|Something was said}}` to the wrapped version `{{Quote|<span lang="en" dir="ltr" class="mw-content-ltr">Something was said</span>}}`. This creates an immediate problem: the equal sign (`=`). By using raw HTML elements the equal sign converts our template input parameter from being the `1` parameter, to being the named `<span lang` parameter.
+
