@@ -40,6 +40,16 @@ This extension will add `<link rel="alternate" href="..." hreflang="fr"/>` tags 
 
 ----
 
+## Localized Site Notices (in [SiteNoticeHooks.php](https://github.com/GStefanowich/MW-TranslateTweaks/blob/main/includes/Hooks/SiteNoticeHooks.php))
+
+The default mediawiki [sitenotice](https://github.com/wikimedia/mediawiki/blob/6c7a8f63d8ce3da03c4509085f034c3045335640/includes/skins/Skin.php#L1873) is cached using an [md5sum](https://github.com/wikimedia/mediawiki/blob/6c7a8f63d8ce3da03c4509085f034c3045335640/includes/skins/Skin.php#L1850) of the site-notices *raw* content. This doesn't work great for a site-notice that contains translated content, and can ultimately cause users to see a site notice that is in the incorrect language. Site Notices should be available equally to all users of all languages.
+
+### Hooks Used
+
+- `SiteNoticeBefore`
+
+----
+
 ## Localized Category Names (in [CategoryHooks.php](https://github.com/GStefanowich/MW-TranslateTweaks/blob/main/includes/Hooks/CategoryHooks.php))
 
 When operating a single-language wiki, namespaces are always in that language. This doesn't change when a wiki become multi-language, namespaces will always be in the primary language and categories just become more complex.

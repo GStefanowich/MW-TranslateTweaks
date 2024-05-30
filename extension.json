@@ -36,6 +36,8 @@
 
 		"MultiContentSave": "main",
 
+		"SiteNoticeBefore": "site-notice",
+
 		"OutputPageMakeCategoryLinks": "categories",
 		"CategoryViewer::generateLink": "categories",
 		"Collation::factory": "categories"
@@ -52,6 +54,13 @@
 			"class": "MediaWiki\\Extension\\TranslateTweaks\\Hooks\\CategoryHooks",
 			"services": [
 				"LinkRenderer",
+				"ExtTranslateTweaks"
+			]
+		},
+		"site-notice": {
+			"class": "MediaWiki\\Extension\\TranslateTweaks\\Hooks\\SiteNoticeHooks",
+			"services": [
+				"MainWANObjectCache",
 				"ExtTranslateTweaks"
 			]
 		}
