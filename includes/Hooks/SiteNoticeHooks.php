@@ -51,6 +51,12 @@ class TranslatedSiteNotice {
         $this -> skin = $skin;
     }
 
+    /**
+     * Get the sitenotice that should be displayed above the current viewed page
+     * 
+     * @see Skin::getSiteNotice Slightly modified from the base Skin method
+     * @return string HTML plain string of the SiteNotice
+     */
     public function getSiteNotice(): string {
         if ( $this -> getUser() -> isRegistered() ) {
             $siteNotice = $this -> getCachedNotice( 'sitenotice' );
@@ -79,6 +85,13 @@ class TranslatedSiteNotice {
         return $siteNotice;
     }
 
+    /**
+     * Get (and save) the $name'd sitenotice
+     * 
+     * @see Skin::getCachedNotice() Slightly modified from the base Skin method to Cache using the language code
+     * @param string $name The name of the sitenotice that we are saving/fetching
+     * @return string|bool The cached sitenotice, or false
+     */
     private function getCachedNotice( string $name ): string|bool {
         $config = $this -> skin -> getConfig();
         $language = $this -> getLanguage();

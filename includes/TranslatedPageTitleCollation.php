@@ -4,6 +4,9 @@ namespace MediaWiki\Extension\TranslateTweaks;
 
 use Collation;
 
+/**
+ * Sort collation for Collection Pages, will sort Pages by their Translated Title rather than the pages Path
+ */
 class TranslatedPageTitleCollation extends Collation {
     private TranslateHelper $helper;
 

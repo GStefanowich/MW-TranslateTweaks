@@ -95,7 +95,6 @@ class TranslateHelper {
      * 
      * @param IContextSource $context
      * @return ?string
-     * @throws MWException If the language is invalid
      */
     public function getPageLanguageFromContext( IContextSource $context ): ?string {
         $title = $context -> getTitle();
