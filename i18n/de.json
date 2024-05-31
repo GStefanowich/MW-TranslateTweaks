@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Unsinn"
+		]
+	},
+	"translate-tweaks-bad-namespace-title": "Übersetzte Titel müssen mit dem übersetzten Namensraum beginnen. Sie sollten mit \"$1\" anfangen."
+}
