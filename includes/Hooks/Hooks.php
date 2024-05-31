@@ -3,6 +3,7 @@
 namespace MediaWiki\Extension\TranslateTweaks\Hooks;
 
 use Article;
+use MalformedTitleException;
 use MediaWiki\Page\Hook\ArticleParserOptionsHook;
 use ParserOptions;
 use User;
@@ -101,13 +102,13 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 
     /**
      * Run verification on saved translations
-     * 
-     * @param RenderedRevision     $renderedRevision
-     * @param UserIdentity         $user
+     *
+     * @param RenderedRevision $renderedRevision
+     * @param UserIdentity $user
      * @param CommentStoreComment $summary
      * @param $flags
      * @param Status $status
-     * @return bool
+     * @return bool Returns false is the translation is invalid
      */
 	public function onMultiContentSave( $renderedRevision, $user, $summary, $flags, $status ) {
 	    $record = $renderedRevision -> getRevision();
@@ -143,20 +144,26 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
                         continue;
                     }
 
-                    // Parse the translated title to check for the Translated version of the Namespace
-                    $translatedTitle = $this -> helper -> parseTitle( $content -> getText(), $languageCode );
+                    try {
+                        // Parse the translated title to check for the Translated version of the Namespace
+                        $translatedTitle = $this -> helper -> parseTitle( $content -> getText(), $languageCode );
 
-                    // If the translated version Namespace doesn't match the English namespace
-                    if ( $translatedTitle -> getNamespace() !== $title -> getNamespace() ) {
-                        // Get the language so we can check the text of what the prefix should be
-                        $language = $this -> helper -> getLanguage( $languageCode );
+                        // If the translated version Namespace doesn't match the English namespace
+                        if ( $translatedTitle -> getNamespace() !== $title -> getNamespace() ) {
+                            // Get the language so we can check the text of what the prefix should be
+                            $language = $this -> helper -> getLanguage( $languageCode );
 
-                        if ( $language ) {
-                            // Error out to the user about the change
-                            $status -> fatal(new MessageValue('translate-tweaks-bad-namespace-title', [ $language -> getNsText( $title -> getNamespace() ) . ':' ]));
+                            if ( $language ) {
+                                // Error out to the user about the change
+                                $status -> fatal(new MessageValue('translate-tweaks-bad-namespace-title', [ $language -> getNsText( $title -> getNamespace() ) . ':' ]));
 
-                            return false;
+                                return false;
+                            }
                         }
+                    } catch ( MalformedTitleException ) {
+                        // Generic 'Invalid Title' message
+                        $status -> fatal(new MessageValue('invalidtitle'));
+                        return false;
                     }
                 }
             }
