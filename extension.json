@@ -11,19 +11,23 @@
 	"license-name": "MIT",
 
 	"requires": {
+		"MediaWiki": ">= 1.39.4",
+		"platform": {
+			"php": ">= 8.1"
+		},
 		"extensions": {
 			"Translate": "*"
 		}
 	},
 	"callback": "MediaWiki\\Extension\\TranslateTweaks\\TranslateTweaks::extensionRegister",
-	
+
 	"config": {
 		"TranslateTweaksForceNamespace": {
 			"value": true,
 			"description": "Forces the translated title of namespaced pages to also contain the translated namespace."
 		}
 	},
-	
+
 	"ServiceWiringFiles": [
 		"includes/ServiceWiring.php"
 	],
