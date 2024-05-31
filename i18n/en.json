@@ -4,5 +4,5 @@
 			"TheElm"
 		]
 	},
-	"translate-tweaks-bad-namespace-title": "Translated titles are required to be prefixed with the translated namespace. Should begin with \"$1\""
+	"translate-tweaks-bad-namespace-title": "Translated titles are required to be prefixed with the translated namespace. Should begin with \"$1\"."
 }

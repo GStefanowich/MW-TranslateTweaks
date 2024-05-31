@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Cedene"
+		]
+	},
+	"translate-tweaks-bad-namespace-title": "Les titres traduits doivent être précédés par l'espace de noms traduit. Ils doivent commencer par \"$1\"."
+}
