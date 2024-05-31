@@ -33,7 +33,6 @@
 	],
 	"Hooks": {
 		"UserGetLanguageObject": "main",
-		"TranslatePrefillTranslation": "main",
 		"OutputPageAfterGetHeadLinksArray": "main",
 
 		"ArticleParserOptions": "main",

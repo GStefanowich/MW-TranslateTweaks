@@ -66,17 +66,6 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 	}
 
 	/**
-	 * TODO: Find out why this doesn't fill out on the frontend (JavaScript issue maybe?)
-	 *
-	 * @param string|null   $translation The current translation
-	 * @param MessageHandle $handle      Translation handle
-	 */
-	public function onTranslatePrefillTranslation( ?string &$translation, MessageHandle $handle ) {
-	    $translation = 'Hello World!';
-	    return true;
-	}
-
-	/**
 	 * After the Head has finished generating, get a list of defined languages for a page
 	 *   and then add alternative hreflangs for SEO
 	 *
@@ -131,6 +120,7 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 	    }
 
         // When translating Page Titles, we want to ensure the translation has the proper Namespace
+        //   $page should match "Translations:[page-path]/Page display title/[language-code]", eg; 'Main page' title is saved at '/wiki/Translations:Main page/Page display title/en'
         if ( preg_match( '/^(.+)\/Page display title(\/[a-z-]+)?$/', $page -> getText() ) ) {
 
             // If this check is disabled
