@@ -15,7 +15,6 @@ use Title;
 use Config;
 use IContextSource;
 use CommentStoreComment;
-use MessageHandle;
 use MediaWiki\Hook\UserGetLanguageObjectHook;
 use MediaWiki\Hook\OutputPageAfterGetHeadLinksArrayHook;
 use MediaWiki\Storage\Hook\MultiContentSaveHook;
