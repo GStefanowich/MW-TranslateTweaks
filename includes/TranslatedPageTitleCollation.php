@@ -39,10 +39,15 @@ class TranslatedPageTitleCollation extends Collation {
     private function getSortKeyAndLanguage( $string ) {
         // If the string passed in contains a NEWLINE character "\n", the current Category and a display override
         if ( strstr( $string, PHP_EOL ) ) {
-            [ $sortKey, $category ] = explode( PHP_EOL, $string, 2 );
+            [ $sortKey, $path ] = explode( PHP_EOL, $string, 2 );
 
             // Determine the language of the given category (Not the override)
-            $languageCode = $this -> helper -> getPathLanguage( $category );
+            $languageCode = $this -> helper -> getPathLanguage( $path );
+
+            // Append the path to the end of the overridden title
+            //   if multiple overrides are the same, it should then sort based off the original title
+            //   otherwise multiple overrides would end up as Chaos sorted
+            $sortKey .= ' ' . $path;
         } else {
             // Determine the languageCode from the given path
             [ $languageCode, $translated ] = $this -> getTranslatedTitleAndLanguageCode( $string );
@@ -86,7 +91,7 @@ class TranslatedPageTitleCollation extends Collation {
         $languageCode = $this -> helper -> getPathLanguage( $string );
 
         // Parse the given title using the titles language
-        $title = $this -> helper -> parseTitle( $string, $languageCode );
+        $title = $this -> helper -> parseTitle( $string, $languageCode, NS_MAIN );
 
         // Get the translated title
         $translated = $this -> helper -> getTranslatedTitle( $title );

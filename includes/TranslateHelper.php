@@ -169,20 +169,20 @@ class TranslateHelper {
     /**
      * Parse a string title using the TitleParser of the given Language
      *
-     * @param string $title
-     * @param string $languageCode
-     * @param ?int $index
+     * @param string $title            A raw title string to parse
+     * @param string $languageCode     The language code used by the page
+     * @param ?int   $defaultNamespace The namespace to use if one is not provided in the $title string
      * @return TitleValue
      * @throws MalformedTitleException
      */
-    public function parseTitle( string $title, string $languageCode, ?int $index = null ): LinkTarget {
+    public function parseTitle( string $title, string $languageCode, ?int $defaultNamespace = null ): LinkTarget {
         $parser = $this -> getTitleParser( $languageCode );
 
         if ( !$parser ) {
-            return Title::newFromText( $title, $index );
+            return Title::newFromText( $title, $defaultNamespace );
         }
 
-        return $parser -> parseTitle( $title, $index );
+        return $parser -> parseTitle( $title, $defaultNamespace );
     }
 
     /**
