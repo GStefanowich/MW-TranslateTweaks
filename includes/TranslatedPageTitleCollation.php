@@ -47,7 +47,7 @@ class TranslatedPageTitleCollation extends Collation {
             // Append the path to the end of the overridden title
             //   if multiple overrides are the same, it should then sort based off the original title
             //   otherwise multiple overrides would end up as Chaos sorted
-            $sortKey .= ' ' . $path;
+            $sortKey .= PHP_EOL . $path;
         } else {
             // Determine the languageCode from the given path
             [ $languageCode, $translated ] = $this -> getTranslatedTitleAndLanguageCode( $string );
