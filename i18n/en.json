@@ -4,5 +4,6 @@
 			"TheElm"
 		]
 	},
+	"translate-tweaks-ext-description": "Adds some additional functionality into the [https://www.mediawiki.org/wiki/Extension:Translate Translate extension]",
 	"translate-tweaks-bad-namespace-title": "Translated titles are required to be prefixed with the translated namespace. Should begin with \"$1\"."
 }

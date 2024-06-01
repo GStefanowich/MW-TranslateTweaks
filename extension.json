@@ -4,7 +4,7 @@
 
 	"name": "TranslateTweaks",
 	"author": "[https://theelm.net TheElm]",
-	"description": "Adds some additional functionality into the [https://www.mediawiki.org/wiki/Extension:Translate Translate extension]",
+	"descriptionmsg": "translate-tweaks-ext-description",
 
 	"url": "https://theelm.net/MW-TranslateTweaks",
 	"version": "1.0.0",

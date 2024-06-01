@@ -141,7 +141,6 @@ class TranslateHelper {
      * 
      * @param LinkTarget $title
      * @return LinkTarget
-     * @throws MalformedTitleException
      */
     public function getTranslatedTitle( LinkTarget $title ): LinkTarget {
         // Get the language of the current page
@@ -152,8 +151,15 @@ class TranslateHelper {
             $translation = $page -> getPageDisplayTitle( $languageCode );
 
             if ( $translation ) {
-                // Use the Translation helper to strip the translated namespace of the Translation
-                return $this -> parseTitle( $translation, $languageCode, NS_CATEGORY );
+                try {
+                    // Use the Translation helper to strip the translated namespace of the Translation
+                    return $this -> parseTitle( $translation, $languageCode, NS_CATEGORY );
+                } catch ( MalformedTitleException ) {
+                    
+                    // In the case that the translated title fails to parse, return the original title
+                    return $title;
+                    
+                }
             }
         }
 

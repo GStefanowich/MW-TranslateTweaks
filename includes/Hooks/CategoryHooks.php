@@ -3,7 +3,6 @@
 namespace MediaWiki\Extension\TranslateTweaks\Hooks;
 
 use Collation;
-use MalformedTitleException;
 use OutputPage;
 use Title;
 use MediaWiki\Extension\TranslateTweaks\TranslateTweaks;
@@ -33,7 +32,6 @@ class CategoryHooks implements OutputPageMakeCategoryLinksHook, CategoryViewer__
      * @param array $categories An assoc array of categories where the key is the category name and the value is the type of category (eg; 'hidden')
      * @param array $links An assoc array of links to categories (Where the key is the type of category (eg; 'hidden') and the value is an array of links 
      * @return bool If the hook shouldn't prevent the default behavior
-     * @throws MalformedTitleException If one of the $categories given is not a valid parseable title
      */
     public function onOutputPageMakeCategoryLinks( $out, $categories, &$links ) {
         // Get the pages title
@@ -66,11 +64,16 @@ class CategoryHooks implements OutputPageMakeCategoryLinksHook, CategoryViewer__
      * @param string $html
      * @param string $link HTML link representation
      * @return false Stops other hooks from running
-     * @throws MalformedTitleException If the title given is not in the correct format
      */
     public function onCategoryViewer__generateLink( $type, $title, $html, &$link ) {
         $translated = $this -> helper -> getTranslatedTitle( $title );
-        $link = $this -> links -> makeLink( $title, $translated -> getText() );
+        if ( $type === 'page' && $translated instanceof Title ) {
+            $text = $translated -> getFullText();
+        } else {
+            $text = $translated -> getText();
+        }
+
+        $link = $this -> links -> makeLink( $title, $text );
         return false;
     }
 
