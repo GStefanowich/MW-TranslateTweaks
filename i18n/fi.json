@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"raengil"
+		]
+	},
+	"translate-tweaks-bad-namespace-title": "Käännetyn otsikon etuliitteenä täytyy olla käännetty nimiavaruus. Pitää alkaa \"$1\"."
+}
