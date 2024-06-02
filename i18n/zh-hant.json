@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Furiko"
+		]
+	},
+	"translate-tweaks-bad-namespace-title": "翻譯後的標題必須以翻譯後的命名空間為前綴。應以\"$1\"開頭."
+}
