@@ -68,7 +68,7 @@
 			"class": "MediaWiki\\Extension\\TranslateTweaks\\Hooks\\SiteNoticeHooks",
 			"services": [
 				"MainConfig",
-				"Parser",
+				"ParserFactory",
 				"MainWANObjectCache",
 				"ExtTranslateTweaks"
 			]

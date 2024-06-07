@@ -10,6 +10,7 @@ use MediaWiki\Hook\SiteNoticeBeforeHook;
 use MediaWiki\MainConfigNames;
 use OutputPage;
 use Parser;
+use ParserFactory;
 use Skin;
 use Title;
 use User;
@@ -17,18 +18,18 @@ use WANObjectCache;
 
 class SiteNoticeHooks implements SiteNoticeBeforeHook {
     private Config $config;
-    private Parser $parser;
+    private ParserFactory $parserFactory;
     private WANObjectCache $cache;
     private TranslateHelper $helper;
 
     public function __construct(
         Config $config,
-        Parser $parser,
+        ParserFactory $parserFactory,
         WANObjectCache $cache,
         TranslateHelper $helper
     ) {
         $this -> config = $config;
-        $this -> parser = $parser;
+        $this -> parserFactory = $parserFactory;
         $this -> cache = $cache;
         $this -> helper = $helper;
     }
@@ -55,18 +56,18 @@ class SiteNoticeHooks implements SiteNoticeBeforeHook {
 }
 
 class TranslatedSiteNotice {
-    private Parser $parser;
+    private ParserFactory $parserFactory;
     private WANObjectCache $cache;
     private TranslateHelper $helper;
     private Skin $skin;
 
     public function __construct(
-        Parser $parser,
+        ParserFactory $parserFactory,
         WANObjectCache $cache,
         TranslateHelper $helper,
         Skin $skin
     ) {
-        $this -> parser = $parser;
+        $this -> parserFactory = $parserFactory;
         $this -> cache = $cache;
         $this -> helper = $helper;
         $this -> skin = $skin;
@@ -137,7 +138,7 @@ class TranslatedSiteNotice {
 
             // Get the translated content
             $content = $page -> getTranslationPage( $language -> getCode() )
-                -> getPageContent( $this -> parser );
+                -> getPageContent( $this -> parserFactory -> getInstance() );
 
             // If empty, return emptystring
             if ( $content -> isEmpty() ) {
