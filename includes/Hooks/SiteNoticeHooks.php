@@ -9,7 +9,6 @@ use MediaWiki\Extension\TranslateTweaks\TranslateHelper;
 use MediaWiki\Hook\SiteNoticeBeforeHook;
 use MediaWiki\MainConfigNames;
 use OutputPage;
-use Parser;
 use ParserFactory;
 use Skin;
 use Title;
