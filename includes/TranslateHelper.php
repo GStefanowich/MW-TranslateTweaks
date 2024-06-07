@@ -2,9 +2,9 @@
 
 namespace MediaWiki\Extension\TranslateTweaks;
 
+use LogicException;
 use MalformedTitleException;
 use MediaWiki\MainConfigNames;
-use MWException;
 use Title;
 use TitleParser;
 use TitleValue;
@@ -52,7 +52,7 @@ class TranslateHelper {
             // Set the interface language to the language code
             return $this -> languages -> getLanguage( $languageCode );
 
-        } catch (MWException) {
+        } catch (LogicException) {
 
             // Eat the exception if the language code is invalid, return null
             return null;
