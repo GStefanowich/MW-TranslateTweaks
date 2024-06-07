@@ -41,7 +41,7 @@ class SiteNoticeHooks implements SiteNoticeBeforeHook {
      */
     public function onSiteNoticeBefore( &$siteNotice, $skin ) {
         $translated = new TranslatedSiteNotice(
-            $this -> parser,
+            $this -> parserFactory,
             $this -> cache,
             $this -> helper,
             $skin
