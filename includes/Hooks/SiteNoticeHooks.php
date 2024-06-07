@@ -2,22 +2,33 @@
 
 namespace MediaWiki\Extension\TranslateTweaks\Hooks;
 
+use Config;
 use Html;
 use Language;
 use MediaWiki\Extension\TranslateTweaks\TranslateHelper;
 use MediaWiki\Hook\SiteNoticeBeforeHook;
 use MediaWiki\MainConfigNames;
 use OutputPage;
+use Parser;
 use Skin;
 use Title;
 use User;
 use WANObjectCache;
 
 class SiteNoticeHooks implements SiteNoticeBeforeHook {
+    private Config $config;
+    private Parser $parser;
     private WANObjectCache $cache;
     private TranslateHelper $helper;
 
-    public function __construct( WANObjectCache $cache, TranslateHelper $helper ) {
+    public function __construct(
+        Config $config,
+        Parser $parser,
+        WANObjectCache $cache,
+        TranslateHelper $helper
+    ) {
+        $this -> config = $config;
+        $this -> parser = $parser;
         $this -> cache = $cache;
         $this -> helper = $helper;
     }
@@ -29,6 +40,7 @@ class SiteNoticeHooks implements SiteNoticeBeforeHook {
      */
     public function onSiteNoticeBefore( &$siteNotice, $skin ) {
         $translated = new TranslatedSiteNotice(
+            $this -> parser,
             $this -> cache,
             $this -> helper,
             $skin
@@ -36,16 +48,25 @@ class SiteNoticeHooks implements SiteNoticeBeforeHook {
 
         // Update the relative value and return false to prevent default behavior
         $siteNotice = $translated -> getSiteNotice();
-        return false;
+
+        // If a translated sitenotice was returned, and we don't have fallback enabled
+        return $siteNotice === '' && $this -> config -> get('TranslatedTweaksFallbackSitenotice');
     }
 }
 
 class TranslatedSiteNotice {
+    private Parser $parser;
     private WANObjectCache $cache;
     private TranslateHelper $helper;
     private Skin $skin;
 
-    public function __construct( WANObjectCache $cache, TranslateHelper $helper, Skin $skin ) {
+    public function __construct(
+        Parser $parser,
+        WANObjectCache $cache,
+        TranslateHelper $helper,
+        Skin $skin
+    ) {
+        $this -> parser = $parser;
         $this -> cache = $cache;
         $this -> helper = $helper;
         $this -> skin = $skin;
@@ -116,7 +137,7 @@ class TranslatedSiteNotice {
 
             // Get the translated content
             $content = $page -> getTranslationPage( $language -> getCode() )
-                -> getPageContent();
+                -> getPageContent( $this -> parser );
 
             // If empty, return emptystring
             if ( $content -> isEmpty() ) {

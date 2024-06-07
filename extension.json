@@ -1,5 +1,5 @@
 {
-	"manifest_version": 1,
+	"manifest_version": 2,
 	"type": "other",
 
 	"name": "TranslateTweaks",
@@ -25,6 +25,10 @@
 		"TranslateTweaksForceNamespace": {
 			"value": true,
 			"description": "Forces the translated title of namespaced pages to also contain the translated namespace."
+		},
+		"TranslatedTweaksFallbackSitenotice": {
+			"value": false,
+			"description": "When enabled will allow falling back to the default MediaWiki:sitenotice, otherwise expects a translated version to be used first"
 		}
 	},
 
@@ -63,6 +67,8 @@
 		"site-notice": {
 			"class": "MediaWiki\\Extension\\TranslateTweaks\\Hooks\\SiteNoticeHooks",
 			"services": [
+				"MainConfig",
+				"Parser",
 				"MainWANObjectCache",
 				"ExtTranslateTweaks"
 			]
