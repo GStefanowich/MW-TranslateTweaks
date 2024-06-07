@@ -50,7 +50,7 @@ class SiteNoticeHooks implements SiteNoticeBeforeHook {
         $siteNotice = $translated -> getSiteNotice();
 
         // If a translated sitenotice was returned, and we don't have fallback enabled
-        return $siteNotice === '' && $this -> config -> get('TranslatedTweaksFallbackSitenotice');
+        return $siteNotice === '' && $this -> config -> get('TranslateTweaksFallbackSitenotice');
     }
 }
 

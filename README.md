@@ -48,6 +48,10 @@ The default mediawiki [sitenotice](https://github.com/wikimedia/mediawiki/blob/6
 
 - `SiteNoticeBefore`
 
+### Configurations
+
+- `$wgTranslateTweaksFallbackSitenotice`: `false` (When enabled will allow falling back to the default MediaWiki:sitenotice, otherwise expects a translated version to be used first)
+
 ----
 
 ## Localized Category Names (in [CategoryHooks.php](https://github.com/GStefanowich/MW-TranslateTweaks/blob/main/includes/Hooks/CategoryHooks.php))
@@ -74,7 +78,7 @@ With this setting enabled (`true` by default), translators will be required to e
 
 ### Configurations
 
-- `$wgTranslateTweaksForceNamespace`: `true`
+- `$wgTranslateTweaksForceNamespace`: `true` (Forces the translated title of namespaced pages to also contain the translated namespace.)
 
 ### Hooks Used
 
