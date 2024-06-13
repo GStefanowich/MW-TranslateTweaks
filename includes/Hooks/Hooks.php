@@ -84,18 +84,29 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 			return;
 		}
 
+        // Get the title object of the TranslatablePage (Eg; $title: Main_Page/de -> $localized: Main_page)
+		$localized = $page -> getTitle();
+
 		$status = $page -> getTranslationPages();
 		if ( !$status ) {
 			return;
 		}
 
 		foreach( $status as $path ) {
-			// Generate a new title object with the title inside of the title namespace
-			$href = Title::makeTitle( $title -> getNamespace(), $path );
+		    // Get the language code of the given path
+            $language = $this -> helper -> getPathLanguage( $path );
+
+			$href = $this -> config -> get('LanguageCode') === $language
+			    // If the page language is the global language, return the root path
+			    ? $localized
+
+                // Generate a new title object with the language code
+			    : $localized -> getSubpage( $language );
+
 			$tags[] = Html::rawElement('link', [
 				'rel'      => 'alternate',
 				'href'     => $href -> getFullURL(),
-				'hreflang' => $this -> helper -> getPathLanguage( $path )
+				'hreflang' => $language
 			]);
 		}
 	}
