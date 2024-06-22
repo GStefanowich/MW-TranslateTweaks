@@ -5,6 +5,8 @@ namespace MediaWiki\Extension\TranslateTweaks\Hooks;
 use Config;
 use Html;
 use Language;
+use MediaWiki\Extension\Translate\PageTranslation\TranslatablePage;
+use MediaWiki\Extension\TranslateTweaks\Helpers\L10nHtml;
 use MediaWiki\Extension\TranslateTweaks\TranslateHelper;
 use MediaWiki\Hook\SiteNoticeBeforeHook;
 use MediaWiki\MainConfigNames;
@@ -116,6 +118,7 @@ class TranslatedSiteNotice {
     private function getCachedNotice( string $name ): string|bool {
         $config = $this -> skin -> getConfig();
         $language = $this -> getLanguage();
+
         if ( !$language ) {
             return false;
         }
@@ -153,11 +156,16 @@ class TranslatedSiteNotice {
             return false;
         }
 
+        // Check if the current Title is a TranslatablePage to cache using '/en', '/fr', '/nl', ...etc
+        //   If this is a source page (eg; '/') don't share a cache with the Wiki Language (eg; '/en'),
+        //   can lead to odd linking to '/en' pages
+        $useLanguageCode = TranslatablePage::isTranslationPage( $this -> getTitle() );
+
         $parsed = $this -> cache -> getWithSetCallback(
             // Use the extra hash appender to let eg SSL variants separately cache
             // Key is verified with md5 hash of unparsed wikitext
             $this -> cache -> makeKey(
-                $name . '/' . $language -> getCode(),
+                $name . ( $useLanguageCode ? '/' . $language -> getCode() : '' ),
                 $config -> get( MainConfigNames::RenderHashAppend ),
                 md5( $notice )
             ),
@@ -168,12 +176,10 @@ class TranslatedSiteNotice {
             }
         );
 
-        return Html::rawElement(
-            'div',
+        return L10nHtml::rawElement(
+            'div', $language,
             [
-                'class' => $name,
-                'lang' => $language -> getHtmlCode(),
-                'dir' => $language -> getDir()
+                'class' => $name
             ],
             $parsed
         );
