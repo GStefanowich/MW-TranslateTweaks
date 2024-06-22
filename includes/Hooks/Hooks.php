@@ -4,10 +4,10 @@ namespace MediaWiki\Extension\TranslateTweaks\Hooks;
 
 use Article;
 use MalformedTitleException;
+use MediaWiki\Extension\TranslateTweaks\Helpers\L10nHtml;
 use MediaWiki\Page\Hook\ArticleParserOptionsHook;
 use ParserOptions;
 use User;
-use Html;
 use MediaWiki\Revision\RenderedRevision;
 use MediaWiki\User\UserIdentity;
 use Status;
@@ -87,28 +87,32 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
         // Get the title object of the TranslatablePage (Eg; $title: Main_Page/de -> $localized: Main_page)
 		$localized = $page -> getTitle();
 
+        // Get languages variations of the page that are in progress
 		$status = $page -> getTranslationPages();
 		if ( !$status ) {
 			return;
 		}
 
+        $wikiLang = $this -> config -> get('LanguageCode');
+
+        // Create an alternate link to the root
+        $tags[] = L10nHtml::linkTag( $localized, 'alternate', $wikiLang );
+
 		foreach( $status as $path ) {
 		    // Get the language code of the given path
             $language = $this -> helper -> getPathLanguage( $path );
 
-			$href = $this -> config -> get('LanguageCode') === $language
-			    // If the page language is the global language, return the root path
-			    ? $localized
-
-                // Generate a new title object with the language code
-			    : $localized -> getSubpage( $language );
-
-			$tags[] = Html::rawElement('link', [
-				'rel'      => 'alternate',
-				'href'     => $href -> getFullURL(),
-				'hreflang' => $language
-			]);
+            // Create an alternate link to the subpage
+			$href = $localized -> getSubpage( $language );
+			$tags[] = L10nHtml::linkTag( $href, 'alternate', $language);
 		}
+
+        // Define the Canonical URL for a page. If the path is '/en$' and the wiki
+        //   uses 'en' the canonical URL will be without the language suffix
+        $canonical = $wikiLang === $this -> helper -> getPathLanguage( $title )
+            ? $title : $localized;
+
+		$tags[] = L10nHtml::linkTag( $canonical, 'canonical' );
 	}
 
     /**

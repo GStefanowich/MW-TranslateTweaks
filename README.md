@@ -40,6 +40,18 @@ This extension will add `<link rel="alternate" href="..." hreflang="fr"/>` tags 
 
 ----
 
+## Canonical links (in [Hooks.php](https://github.com/GStefanowich/MW-TranslateTweaks/blob/main/includes/Hooks/Hooks.php))
+
+Similarly to above with *Alternative* links, a Canonical link will be provided. The Translate Extension creates and stores a copy of *every language* as a subpage. Wiki language is set as 'English'? Well you'll get both "Main_Page" and "Main_Page/en". The "/en" variant may be used in certain cases such as for transclusion, but in the eyes of SEO these are two different pages with indentical content.
+
+A `<link rel="canonical" href="..."/>` tag is added to the `<head></head>` of the page content. This allows for search engines to mark "Main_Page" as the canonical version of "Main_Page/en".
+
+### Hooks Used
+
+- `OutputPageAfterGetHeadLinksArray`
+
+----
+
 ## Localized Site Notices (in [SiteNoticeHooks.php](https://github.com/GStefanowich/MW-TranslateTweaks/blob/main/includes/Hooks/SiteNoticeHooks.php))
 
 The default mediawiki [sitenotice](https://github.com/wikimedia/mediawiki/blob/6c7a8f63d8ce3da03c4509085f034c3045335640/includes/skins/Skin.php#L1873) is cached using an [md5sum](https://github.com/wikimedia/mediawiki/blob/6c7a8f63d8ce3da03c4509085f034c3045335640/includes/skins/Skin.php#L1850) of the site-notices *raw* content. This doesn't work great for a site-notice that contains translated content, and can ultimately cause users to see a site notice that is in the incorrect language. Site Notices should be available equally to all users of all languages.
