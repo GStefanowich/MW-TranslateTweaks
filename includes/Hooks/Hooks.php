@@ -107,10 +107,13 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 			$tags[] = L10nHtml::linkTag( $href, 'alternate', $language);
 		}
 
+        // Add the "Default" as the Source page
+        $tags[] = L10nHtml::linkTag( $localized, 'alternate', 'x-default' );
+
         // Define the Canonical URL for a page. If the path is '/en$' and the wiki
         //   uses 'en' the canonical URL will be without the language suffix
         $canonical = $wikiLang === $this -> helper -> getPathLanguage( $title )
-            ? $title : $localized;
+            ? $localized : $title;
 
 		$tags[] = L10nHtml::linkTag( $canonical, 'canonical' );
 	}
