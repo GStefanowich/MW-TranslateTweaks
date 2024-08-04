@@ -39,7 +39,8 @@
 		"UserGetLanguageObject": "main",
 		"OutputPageAfterGetHeadLinksArray": "main",
 
-		"ArticleParserOptions": "main",
+		"ArticleParserOptions": "search-engines",
+		"ArticlePageDataBefore": "search-engines",
 
 		"MultiContentSave": "main",
 
@@ -70,6 +71,13 @@
 				"MainConfig",
 				"ParserFactory",
 				"MainWANObjectCache",
+				"ExtTranslateTweaks"
+			]
+		},
+		"search-engines": {
+			"class": "MediaWiki\\Extension\\TranslateTweaks\\Hooks\\SearchEngineIndexHooks",
+			"services": [
+				"MainConfig",
 				"ExtTranslateTweaks"
 			]
 		}

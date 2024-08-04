@@ -2,12 +2,12 @@
 
 namespace MediaWiki\Extension\TranslateTweaks\Hooks;
 
-use Article;
 use MalformedTitleException;
 use MediaWiki\Extension\TranslateTweaks\Helpers\L10nHtml;
-use MediaWiki\Page\Hook\ArticleParserOptionsHook;
-use ParserOptions;
-use User;
+use MediaWiki\MainConfigNames;
+use MediaWiki\MediaWikiServices;
+use MediaWiki\Output\OutputPage;
+use MediaWiki\User\User;
 use MediaWiki\Revision\RenderedRevision;
 use MediaWiki\User\UserIdentity;
 use Status;
@@ -23,7 +23,7 @@ use MediaWiki\Storage\Hook\MultiContentSaveHook;
 use MediaWiki\Extension\TranslateTweaks\TranslateHelper;
 use Wikimedia\Message\MessageValue;
 
-class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArrayHook, MultiContentSaveHook, ArticleParserOptionsHook {
+class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArrayHook, MultiContentSaveHook {
 	private Config $config;
 	private TranslateHelper $helper;
 
@@ -70,7 +70,7 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 	 *   and then add alternative hreflangs for SEO
 	 *
 	 * @param array[]    $tags   An array of the current head tags
-	 * @param PageOutput $output The page being output
+	 * @param OutputPage $output The page being output
 	 */
 	public function onOutputPageAfterGetHeadLinksArray( &$tags, $output ) {
 		$context = $output -> getContext();
@@ -93,10 +93,13 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 			return;
 		}
 
-        $wikiLang = $this -> config -> get('LanguageCode');
+        $wikiLang = $this -> config -> get( MainConfigNames::LanguageCode );
+        $isPageLocalizedSource = str_ends_with( $title -> getBaseText(), '/' . $wikiLang );
 
-        // Create an alternate link to the root
-        $tags[] = L10nHtml::linkTag( $localized, 'alternate', $wikiLang );
+        if ( !$isPageLocalizedSource ) {
+            // Create an alternate link to the root
+            $tags[] = L10nHtml::linkTag( $localized, 'alternate', $wikiLang );
+        }
 
 		foreach( $status as $path ) {
 		    // Get the language code of the given path
@@ -104,7 +107,11 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 
             // Create an alternate link to the subpage
 			$href = $localized -> getSubpage( $language );
-			$tags[] = L10nHtml::linkTag( $href, 'alternate', $language);
+
+			// Don't add the alternate of the source lang (Unless we're on that page)
+			if ( $wikiLang !== $language || $isPageLocalizedSource ) {
+                $tags[] = L10nHtml::linkTag( $href, 'alternate', $language);
+			}
 		}
 
         // Add the "Default" as the Source page
@@ -190,32 +197,4 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
         return true;
     }
 
-    /**
-     * After getting the ParserOptions for an Article, check if that Article is in the RobotPolicies, and copy the policy to translated pages
-     *   $wgArticleRobotPolicies doesn't support wild cards, and translated pages can really add up. This method only runs once per subpage,
-     *   it'll check on translated pages such as "/nl", and check the root page. It won't run during configuration to check the root page and apply to all subpages
-     * 
-     * @param Article $article
-     * @param ParserOptions $opts
-     * @return void
-     */
-    public function onArticleParserOptions( Article $article, ParserOptions $opts ): void {
-        global $wgArticleRobotPolicies; // Could use $this -> config but a setter isn't available
-
-        // Convert the translated path to get the root TranslatablePage
-        $title = $article -> getTitle();
-        $translated = $this -> helper -> getPage( $title );
-
-        // If the Article is a TranslatablePage
-        if ( $translated ) {
-            // Check the source page if it has a present RobotPolicy
-            $source = $translated -> getTitle() -> getText();
-            $policy = $wgArticleRobotPolicies[ $source ] ?? null;
-
-            // Apply the policy to the current (translated) article
-            if ( $policy ) {
-                $wgArticleRobotPolicies[ $title -> getText() ] = $policy;
-            }
-        }
-    }
 }
