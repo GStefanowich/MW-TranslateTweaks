@@ -171,6 +171,10 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 
                     try {
                         // Parse the translated title to check for the Translated version of the Namespace
+                        /*
+                         * TODO: Try an alternate way to parse, the MediaWiki built-in way relies on custom namespaces to be already translated in LocalSettings
+                         *   Custom namespaces can't use 'MediaWiki:ns-' pages for ad hoc updating.
+                         */
                         $translatedTitle = $this -> helper -> parseTitle( $content -> getText(), $languageCode );
 
                         // If the translated version Namespace doesn't match the English namespace
@@ -196,5 +200,4 @@ class Hooks implements UserGetLanguageObjectHook, OutputPageAfterGetHeadLinksArr
 
         return true;
     }
-
 }
