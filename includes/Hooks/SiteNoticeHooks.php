@@ -159,7 +159,7 @@ class TranslatedSiteNotice {
         // Check if the current Title is a TranslatablePage to cache using '/en', '/fr', '/nl', ...etc
         //   If this is a source page (eg; '/') don't share a cache with the Wiki Language (eg; '/en'),
         //   can lead to odd linking to '/en' pages
-        $useLanguageCode = TranslatablePage::isTranslationPage( $this -> getTitle() );
+        $useLanguageCode = str_ends_with( $this -> getTitle() -> getPrefixedText(), '/' . $language -> getCode() );
 
         $parsed = $this -> cache -> getWithSetCallback(
             // Use the extra hash appender to let eg SSL variants separately cache
