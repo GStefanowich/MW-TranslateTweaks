@@ -3,57 +3,46 @@
 namespace MediaWiki\Extension\TranslateTweaks\Hooks;
 
 use Collation;
+use MediaWiki\Page\ProperPageIdentity;
 use OutputPage;
 use Title;
 use MediaWiki\Extension\TranslateTweaks\TranslateTweaks;
-use MediaWiki\Hook\CategoryViewer__generateLinkHook;
-use MediaWiki\Hook\Collation__factoryHook;
-use MediaWiki\Hook\OutputPageMakeCategoryLinksHook;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Extension\TranslateTweaks\TranslateHelper;
 use MediaWiki\Extension\TranslateTweaks\TranslatedPageTitleCollation;
 
-class CategoryHooks implements OutputPageMakeCategoryLinksHook, CategoryViewer__generateLinkHook, Collation__factoryHook {
-    private LinkRenderer $links;
-    private TranslateHelper $helper;
-
+class CategoryHooks implements
+    \MediaWiki\Output\Hook\OutputPageRenderCategoryLinkHook,
+    \MediaWiki\Hook\CategoryViewer__generateLinkHook,
+    \MediaWiki\Hook\Collation__factoryHook
+{
     public function __construct(
-        LinkRenderer $links,
-        TranslateHelper $helper
-    ) {
-        $this -> links = $links;
-        $this -> helper = $helper;
-    }
+        private readonly LinkRenderer $links,
+        private readonly TranslateHelper $helper
+    ) {}
 
     /**
      * Generate the links to category pages on the bottom of a given page
      * 
-     * @param OutputPage $out The current page
-     * @param array $categories An assoc array of categories where the key is the category name and the value is the type of category (eg; 'hidden')
-     * @param array $links An assoc array of links to categories (Where the key is the type of category (eg; 'hidden') and the value is an array of links 
-     * @return bool If the hook shouldn't prevent the default behavior
+     * @param \MediaWiki\Output\OutputPage $outputPage The current page
+     * @param ProperPageIdentity $categoryTitle The page identity for the category
+     * @param string $text Current text value of the category
+     * @param ?string $link Out value link replacement
+     * @return void
      */
-    public function onOutputPageMakeCategoryLinks( $out, $categories, &$links ) {
-        // Get the pages title
-        $title = $out -> getTitle();
-        if ( !$title ) {
-            return true;
-        }
-
-        foreach ($categories as $category => $type) {
-            // Create an empty array if one doesn't exist
-            $links[$type] ??= [];
-
+    public function onOutputPageRenderCategoryLink(
+        \MediaWiki\Output\OutputPage $outputPage,
+        ProperPageIdentity $categoryTitle,
+        string $text,
+        ?string &$link
+    ): void {
+        if ( $categoryTitle->exists() ) {
             // Create a title object
-            $title = Title::newFromText( $category, NS_CATEGORY );
-            $translated = $this -> helper -> getTranslatedTitle( $title );
-            $link = $this -> links -> makeLink( $title, $translated -> getText() );
+            $title = Title::newFromPageIdentity( $categoryTitle );
+            $translated = $this->helper->getTranslatedTitle( $title );
 
-            // Add our link to the categories
-            $links[$type][] = $link;
+            $link = $this->links->makeLink( $title, $translated->getText() );
         }
-
-        return false;
     }
 
     /**
@@ -66,14 +55,14 @@ class CategoryHooks implements OutputPageMakeCategoryLinksHook, CategoryViewer__
      * @return false Stops other hooks from running
      */
     public function onCategoryViewer__generateLink( $type, $title, $html, &$link ) {
-        $translated = $this -> helper -> getTranslatedTitle( $title );
+        $translated = $this->helper->getTranslatedTitle( $title );
         if ( $type === 'page' && $translated instanceof Title ) {
-            $text = $translated -> getFullText();
+            $text = $translated->getFullText();
         } else {
-            $text = $translated -> getText();
+            $text = $translated->getText();
         }
 
-        $link = $this -> links -> makeLink( $title, $text );
+        $link = $this->links->makeLink( $title, $text );
         return false;
     }
 
@@ -86,7 +75,7 @@ class CategoryHooks implements OutputPageMakeCategoryLinksHook, CategoryViewer__
      */
     public function onCollation__factory( $collationName, &$collationObject ) {
         if ( $collationName === TranslateTweaks::CATEGORY_COLLATION ) {
-            $collationObject = new TranslatedPageTitleCollation( $this -> helper );
+            $collationObject = new TranslatedPageTitleCollation( $this->helper );
 
             return false;
         }

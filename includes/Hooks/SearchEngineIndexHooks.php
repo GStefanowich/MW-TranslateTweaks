@@ -7,25 +7,20 @@ use Config;
 use MediaWiki\Extension\TranslateTweaks\TranslateHelper;
 use MediaWiki\Extension\TranslateTweaks\Helpers\StaticRobotsPolicy;
 use MediaWiki\MainConfigNames;
-use MediaWiki\Page\Hook\ArticlePageDataBeforeHook;
-use MediaWiki\Page\Hook\ArticleParserOptionsHook;
 use ParserOptions;
 use WikiPage;
 
 /**
  * Controls Indexing of Translation pages
  */
-class SearchEngineIndexHooks implements ArticleParserOptionsHook, ArticlePageDataBeforeHook {
-    private Config $config;
-    private TranslateHelper $helper;
-
+class SearchEngineIndexHooks implements
+    \MediaWiki\Page\Hook\ArticleParserOptionsHook,
+    \MediaWiki\Page\Hook\ArticlePageDataBeforeHook
+{
     public function __construct(
-        Config $config,
-        TranslateHelper $helper
-    ) {
-        $this -> config = $config;
-        $this -> helper = $helper;
-    }
+        private readonly Config $config,
+        private readonly TranslateHelper $helper
+    ) {}
 
     /**
      * After getting the ParserOptions for an Article, check if that Article is in the RobotPolicies, and copy the policy to translated pages
@@ -38,13 +33,13 @@ class SearchEngineIndexHooks implements ArticleParserOptionsHook, ArticlePageDat
      */
     public function onArticleParserOptions( Article $article, ParserOptions $opts ): void {
         // Convert the translated path to get the root TranslatablePage
-        $title = $article -> getTitle();
-        $translated = $this -> helper -> getPage( $title );
+        $title = $article->getTitle();
+        $translated = $this->helper->getPage( $title );
 
         // If the Article is a TranslatablePage
         if ( $translated ) {
             // Check the source page if it has a present RobotPolicy
-            $policy = StaticRobotsPolicy::get( $translated -> getTitle() );
+            $policy = StaticRobotsPolicy::get( $translated->getTitle() );
 
             // Apply the policy to the current (translated) article
             if ( $policy ) {
@@ -64,10 +59,10 @@ class SearchEngineIndexHooks implements ArticleParserOptionsHook, ArticlePageDat
      * @return void
      */
     public function onArticlePageDataBefore( $wikiPage, &$fields, &$tables, &$joinConds ): void {
-        $wikiLang = $this -> config -> get( MainConfigNames::LanguageCode );
-        $title = $wikiPage -> getTitle();
-        if ( str_ends_with( $title -> getPrefixedText(), '/' . $wikiLang ) ) {
-            StaticRobotsPolicy::set($title, 'noindex');
+        $wikiLang = $this->config->get( MainConfigNames::LanguageCode );
+        $title = $wikiPage->getTitle();
+        if ( str_ends_with( $title->getPrefixedText(), '/' . $wikiLang ) ) {
+            StaticRobotsPolicy::set( $title, 'noindex' );
         }
     }
 }
