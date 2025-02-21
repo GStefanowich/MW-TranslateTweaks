@@ -9,9 +9,9 @@ return [
     ): TranslateHelper {
         return new TranslateHelper(
             $services,
-            $services -> getMainConfig(),
-            $services -> getMessageCache(),
-            $services -> getLanguageFactory()
+            $services->getMainConfig(),
+            $services->getMessageCache(),
+            $services->getLanguageFactory()
         );
     }
 ];

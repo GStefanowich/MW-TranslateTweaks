@@ -7,11 +7,11 @@
 	"descriptionmsg": "translate-tweaks-ext-description",
 
 	"url": "https://theelm.net/MW-TranslateTweaks",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"license-name": "MIT",
 
 	"requires": {
-		"MediaWiki": ">= 1.39.4",
+		"MediaWiki": ">= 1.43.0",
 		"platform": {
 			"php": ">= 8.1"
 		},
@@ -46,7 +46,7 @@
 
 		"SiteNoticeBefore": "site-notice",
 
-		"OutputPageMakeCategoryLinks": "categories",
+		"OutputPageRenderCategoryLink": "categories",
 		"CategoryViewer::generateLink": "categories",
 		"Collation::factory": "categories"
 	},

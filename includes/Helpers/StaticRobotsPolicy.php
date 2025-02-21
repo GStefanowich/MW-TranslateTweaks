@@ -14,7 +14,7 @@ class StaticRobotsPolicy {
      */
     public static function get( Title $title ): mixed {
         global $wgArticleRobotPolicies; // Could access config but a setter isn't available
-        return $wgArticleRobotPolicies[$title -> getPrefixedText()] ?? null;
+        return $wgArticleRobotPolicies[$title->getPrefixedText()] ?? null;
     }
 
     /**
@@ -25,9 +25,9 @@ class StaticRobotsPolicy {
     public static function set( Title $title, ?string $policy ): void {
         global $wgArticleRobotPolicies; // Could access config but a setter isn't available
         if ( $policy ) {
-            $wgArticleRobotPolicies[$title -> getPrefixedText()] = $policy;
+            $wgArticleRobotPolicies[ $title->getPrefixedText() ] = $policy;
         } else {
-            unset($wgArticleRobotPolicies[$title -> getPrefixedText()]);
+            unset( $wgArticleRobotPolicies[ $title->getPrefixedText() ] );
         }
     }
 }

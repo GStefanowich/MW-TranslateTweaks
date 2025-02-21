@@ -20,25 +20,14 @@ use MediaWiki\Extension\Translate\PageTranslation\TranslatablePage;
 
 class TranslateHelper {
     public const SERVICE_NAME = 'ExtTranslateTweaks';
-
-    private MediaWikiServices $services;
-    private Config $config;
-    private MessageCache $messages;
-    private LanguageFactory $languages;
-
     private array $titleParser = [];
 
     public function __construct(
-        MediaWikiServices $services,
-        Config $config,
-        MessageCache $cache,
-        LanguageFactory $languages
-    ) {
-        $this -> services  = $services;
-        $this -> config    = $config;
-        $this -> messages  = $cache;
-        $this -> languages = $languages;
-    }
+        private readonly MediaWikiServices $services,
+        private readonly Config $config,
+        private readonly MessageCache $messages,
+        private readonly LanguageFactory $languages
+    ) {}
 
     /**
      * Get the language object for a given language code
@@ -50,7 +39,7 @@ class TranslateHelper {
         try {
 
             // Set the interface language to the language code
-            return $this -> languages -> getLanguage( $languageCode );
+            return $this->languages->getLanguage( $languageCode );
 
         } catch (LogicException) {
 
@@ -68,10 +57,10 @@ class TranslateHelper {
      */
     public function getPathLanguage( $path ): ?string {
         // Get the language code from the message cache
-        [ /* Discard */, $language ] = $this -> messages -> figureMessage( $path );
+        [ /* Discard */, $language ] = $this->messages->figureMessage( $path );
 
         // If a language is returned, and it exists in the language factory
-        if ( $language && $this -> getLanguage( $language ) ) {
+        if ( $language && $this->getLanguage( $language ) ) {
             // Set the interface language to the language code
             return $language;
         }
@@ -86,7 +75,7 @@ class TranslateHelper {
      * @return ?string A language code, if the title contains one
      */
     public function getPageLanguage( LinkTarget $title ): ?string {
-        return $this -> getPathLanguage( $title -> getText() );
+        return $this->getPathLanguage( $title->getText() );
     }
 
     /**
@@ -97,14 +86,14 @@ class TranslateHelper {
      * @return ?string
      */
     public function getPageLanguageFromContext( IContextSource $context ): ?string {
-        $title = $context -> getTitle();
+        $title = $context->getTitle();
 
         // If the Context isn't on a page (Eg; a script) return the sites Language code
         if ( !$title ) {
-            return (string) $this -> config -> get( MainConfigNames::LanguageCode );
+            return (string) $this->config->get( MainConfigNames::LanguageCode );
         }
 
-        return $this -> getPageLanguage( $title );
+        return $this->getPageLanguage( $title );
     }
 
     /**
@@ -120,15 +109,15 @@ class TranslateHelper {
         }
 
         $page = TranslatablePage::newFromTitle( $title );
-        if ( $page -> getMarkedTag() === null ) {
+        if ( $page->getMarkedTag() === null ) {
             $page = TranslatablePage::isTranslationPage( $title );
         }
 
-        if ( $page === false || $page -> getMarkedTag() === null ) {
+        if ( $page === false || $page->getMarkedTag() === null ) {
             return null;
         }
 
-        $status = $page -> getTranslationPercentages();
+        $status = $page->getTranslationPercentages();
         if ( !$status ) {
             return null;
         }
@@ -144,16 +133,16 @@ class TranslateHelper {
      */
     public function getTranslatedTitle( LinkTarget $title ): LinkTarget {
         // Get the language of the current page
-        $languageCode = $this -> getPageLanguage( $title );
-        $page = $this -> getPage( $title );
+        $languageCode = $this->getPageLanguage( $title );
+        $page = $this->getPage( $title );
 
         if ( /* If the category exists as a translation */ $page ) {
-            $translation = $page -> getPageDisplayTitle( $languageCode );
+            $translation = $page->getPageDisplayTitle( $languageCode );
 
             if ( $translation ) {
                 try {
                     // Use the Translation helper to strip the translated namespace of the Translation
-                    return $this -> parseTitle( $translation, $languageCode, NS_CATEGORY );
+                    return $this->parseTitle( $translation, $languageCode, NS_CATEGORY );
                 } catch ( MalformedTitleException ) {
                     
                     // In the case that the translated title fails to parse, return the original title
@@ -176,13 +165,13 @@ class TranslateHelper {
      * @throws MalformedTitleException
      */
     public function parseTitle( string $title, string $languageCode, ?int $defaultNamespace = null ): LinkTarget {
-        $parser = $this -> getTitleParser( $languageCode );
+        $parser = $this->getTitleParser( $languageCode );
 
         if ( !$parser ) {
             return Title::newFromText( $title, $defaultNamespace );
         }
 
-        return $parser -> parseTitle( $title, $defaultNamespace );
+        return $parser->parseTitle( $title, $defaultNamespace );
     }
 
     /**
@@ -192,10 +181,10 @@ class TranslateHelper {
      * @return ?TitleParser
      */
     private function getTitleParser( string $languageCode ): ?TitleParser {
-        $parser = $this -> titleParser[ $languageCode ] ?? null;
+        $parser = $this->titleParser[ $languageCode ] ?? null;
 
         if ( !$parser ) {
-            $language = $this -> getLanguage( $languageCode );
+            $language = $this->getLanguage( $languageCode );
 
             if ( !$language ) {
                 return null;
@@ -203,10 +192,10 @@ class TranslateHelper {
 
             $parser = new MediaWikiTitleCodec(
                 $language,
-                $this -> services -> getGenderCache(), // TODO: Recreate the global GenderCache? Not currently needed, but the global GenderCache has it's own $language
+                $this->services->getGenderCache(), // TODO: Recreate the global GenderCache? Not currently needed, but the global GenderCache has it's own $language
                 [], // Currently don't need local interwiki links, so empty
-                $this -> services -> getInterwikiLookup(),
-                $this -> services -> getNamespaceInfo()
+                $this->services->getInterwikiLookup(),
+                $this->services->getNamespaceInfo()
             );
         }
 

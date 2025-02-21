@@ -2,18 +2,17 @@
 
 namespace MediaWiki\Extension\TranslateTweaks;
 
-use Collation;
 use MalformedTitleException;
 
 /**
  * Sort collation for Collection Pages, will sort Pages by their Translated Title rather than the pages Path
  */
-class TranslatedPageTitleCollation extends Collation {
-    private TranslateHelper $helper;
-
-    public function __construct( TranslateHelper $helper ) {
-        $this -> helper = $helper;
-    }
+class TranslatedPageTitleCollation extends
+    \Collation
+{
+    public function __construct(
+        private readonly TranslateHelper $helper
+    ) {}
 
     /**
      * Get the Sort Key for a specific input
@@ -24,9 +23,9 @@ class TranslatedPageTitleCollation extends Collation {
      */
     public function getSortKey( $string ) {
         // Get the translated title
-        [ $language, $sortKey ] = $this -> getSortKeyAndLanguage( $string );
+        [ $language, $sortKey ] = $this->getSortKeyAndLanguage( $string );
 
-        return $language -> uc( $sortKey );
+        return $language->uc( $sortKey );
     }
 
     /**
@@ -42,7 +41,7 @@ class TranslatedPageTitleCollation extends Collation {
             [ $sortKey, $path ] = explode( PHP_EOL, $string, 2 );
 
             // Determine the language of the given category (Not the override)
-            $languageCode = $this -> helper -> getPathLanguage( $path );
+            $languageCode = $this->helper->getPathLanguage( $path );
 
             // Append the path to the end of the overridden title
             //   if multiple overrides are the same, it should then sort based off the original title
@@ -50,14 +49,14 @@ class TranslatedPageTitleCollation extends Collation {
             $sortKey .= PHP_EOL . $path;
         } else {
             // Determine the languageCode from the given path
-            [ $languageCode, $translated ] = $this -> getTranslatedTitleAndLanguageCode( $string );
+            [ $languageCode, $translated ] = $this->getTranslatedTitleAndLanguageCode( $string );
 
             // Use the text of the Translated Title as the sortKey
-            $sortKey = $translated -> getText();
+            $sortKey = $translated->getText();
         }
 
         // Get the Language object for running Localized functions on
-        $language = $this -> helper -> getLanguage( $languageCode );
+        $language = $this->helper->getLanguage( $languageCode );
 
         return [ $language, $sortKey ];
     }
@@ -75,10 +74,10 @@ class TranslatedPageTitleCollation extends Collation {
             $string = substr( $string, 1 );
         }
 
-        [ $language, $sortKey ] = $this -> getSortKeyAndLanguage( $string );
+        [ $language, $sortKey ] = $this->getSortKeyAndLanguage( $string );
 
         // Return the Uppercased first letter using the page language
-        return $language -> ucfirst( $language -> firstChar( $sortKey ) );
+        return $language->ucfirst( $language->firstChar( $sortKey ) );
     }
 
     /**
@@ -88,13 +87,13 @@ class TranslatedPageTitleCollation extends Collation {
      */
     private function getTranslatedTitleAndLanguageCode( $string ) {
         // Determine the languageCode from the given path
-        $languageCode = $this -> helper -> getPathLanguage( $string );
+        $languageCode = $this->helper->getPathLanguage( $string );
 
         // Parse the given title using the titles language
-        $title = $this -> helper -> parseTitle( $string, $languageCode, NS_MAIN );
+        $title = $this->helper->parseTitle( $string, $languageCode, NS_MAIN );
 
         // Get the translated title
-        $translated = $this -> helper -> getTranslatedTitle( $title );
+        $translated = $this->helper->getTranslatedTitle( $title );
 
         return [ $languageCode, $translated ];
     }
