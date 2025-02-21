@@ -4,7 +4,6 @@ namespace MediaWiki\Extension\TranslateTweaks\Hooks;
 
 use Collation;
 use MediaWiki\Page\ProperPageIdentity;
-use OutputPage;
 use Title;
 use MediaWiki\Extension\TranslateTweaks\TranslateTweaks;
 use MediaWiki\Linker\LinkRenderer;
