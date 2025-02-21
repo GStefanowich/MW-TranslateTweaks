@@ -2,7 +2,7 @@
 
 namespace MediaWiki\Extension\TranslateTweaks;
 
-use MalformedTitleException;
+use MediaWiki\Title\MalformedTitleException;
 
 /**
  * Sort collation for Collection Pages, will sort Pages by their Translated Title rather than the pages Path

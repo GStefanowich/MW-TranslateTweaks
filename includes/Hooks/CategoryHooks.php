@@ -3,8 +3,9 @@
 namespace MediaWiki\Extension\TranslateTweaks\Hooks;
 
 use Collation;
+use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\ProperPageIdentity;
-use Title;
+use MediaWiki\Title\Title;
 use MediaWiki\Extension\TranslateTweaks\TranslateTweaks;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Extension\TranslateTweaks\TranslateHelper;
@@ -23,14 +24,14 @@ class CategoryHooks implements
     /**
      * Generate the links to category pages on the bottom of a given page
      * 
-     * @param \MediaWiki\Output\OutputPage $outputPage The current page
+     * @param OutputPage $outputPage The current page
      * @param ProperPageIdentity $categoryTitle The page identity for the category
      * @param string $text Current text value of the category
      * @param ?string $link Out value link replacement
      * @return void
      */
     public function onOutputPageRenderCategoryLink(
-        \MediaWiki\Output\OutputPage $outputPage,
+        OutputPage $outputPage,
         ProperPageIdentity $categoryTitle,
         string $text,
         ?string &$link
