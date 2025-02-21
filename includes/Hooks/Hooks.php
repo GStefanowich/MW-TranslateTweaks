@@ -2,19 +2,19 @@
 
 namespace MediaWiki\Extension\TranslateTweaks\Hooks;
 
-use MalformedTitleException;
+use MediaWiki\Title\MalformedTitleException;
 use MediaWiki\Extension\TranslateTweaks\Helpers\L10nHtml;
 use MediaWiki\MainConfigNames;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\User\User;
 use MediaWiki\Revision\RenderedRevision;
 use MediaWiki\User\UserIdentity;
-use Status;
-use TextContent;
-use Title;
-use Config;
-use IContextSource;
-use CommentStoreComment;
+use MediaWiki\Status\Status;
+use MediaWiki\Content\TextContent;
+use MediaWiki\Title\Title;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\CommentStore\CommentStoreComment;
 use MediaWiki\Extension\TranslateTweaks\TranslateHelper;
 use Wikimedia\Message\MessageValue;
 

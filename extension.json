@@ -42,6 +42,8 @@
 		"ArticleParserOptions": "search-engines",
 		"ArticlePageDataBefore": "search-engines",
 
+		"BeforeDisplayNoArticleText": "new-contributions",
+
 		"MultiContentSave": "main",
 
 		"SiteNoticeBefore": "site-notice",
@@ -53,6 +55,13 @@
 	"HookHandlers": {
 		"main": {
 			"class": "MediaWiki\\Extension\\TranslateTweaks\\Hooks\\Hooks",
+			"services": [
+				"MainConfig",
+				"ExtTranslateTweaks"
+			]
+		},
+		"new-contributions": {
+			"class": "MediaWiki\\Extension\\TranslateTweaks\\Hooks\\TranslationHooks",
 			"services": [
 				"MainConfig",
 				"ExtTranslateTweaks"

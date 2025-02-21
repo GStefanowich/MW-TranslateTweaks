@@ -3,16 +3,16 @@
 namespace MediaWiki\Extension\TranslateTweaks;
 
 use LogicException;
-use MalformedTitleException;
+use MediaWiki\Title\MalformedTitleException;
 use MediaWiki\MainConfigNames;
-use Title;
-use TitleParser;
-use TitleValue;
-use Config;
-use Language;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleParser;
+use MediaWiki\Title\TitleValue;
+use MediaWiki\Config\Config;
+use MediaWiki\Language\Language;
 use MessageCache;
-use IContextSource;
-use MediaWikiTitleCodec;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Title\MediaWikiTitleCodec;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\Languages\LanguageFactory;

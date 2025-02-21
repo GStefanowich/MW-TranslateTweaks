@@ -2,18 +2,18 @@
 
 namespace MediaWiki\Extension\TranslateTweaks\Hooks;
 
-use Config;
-use Html;
-use Language;
+use MediaWiki\Config\Config;
+use MediaWiki\Html\Html;
+use MediaWiki\Language\Language;
 use MediaWiki\Extension\TranslateTweaks\Helpers\L10nHtml;
 use MediaWiki\Extension\TranslateTweaks\TranslateHelper;
 use MediaWiki\MainConfigNames;
-use OutputPage;
-use ParserFactory;
+use MediaWiki\Output\OutputPage;
+use MediaWiki\Parser\ParserFactory;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use Skin;
-use Title;
-use User;
-use WANObjectCache;
+use Wikimedia\ObjectCache\WANObjectCache;
 
 class SiteNoticeHooks implements
     \MediaWiki\Hook\SiteNoticeBeforeHook
@@ -47,22 +47,12 @@ class SiteNoticeHooks implements
 }
 
 class TranslatedSiteNotice {
-    private ParserFactory $parserFactory;
-    private WANObjectCache $cache;
-    private TranslateHelper $helper;
-    private Skin $skin;
-
     public function __construct(
-        ParserFactory $parserFactory,
-        WANObjectCache $cache,
-        TranslateHelper $helper,
-        Skin $skin
-    ) {
-        $this->parserFactory = $parserFactory;
-        $this->cache = $cache;
-        $this->helper = $helper;
-        $this->skin = $skin;
-    }
+        private readonly ParserFactory $parserFactory,
+        private readonly WANObjectCache $cache,
+        private readonly TranslateHelper $helper,
+        private readonly Skin $skin
+    ) {}
 
     /**
      * Get the sitenotice that should be displayed above the current viewed page
