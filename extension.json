@@ -48,6 +48,8 @@
 
 		"SiteNoticeBefore": "site-notice",
 
+		"OutputPageParserOutput": "localized-opengraph",
+
 		"OutputPageRenderCategoryLink": "categories",
 		"CategoryViewer::generateLink": "categories",
 		"Collation::factory": "categories"
@@ -87,6 +89,13 @@
 			"class": "MediaWiki\\Extension\\TranslateTweaks\\Hooks\\SearchEngineIndexHooks",
 			"services": [
 				"MainConfig",
+				"ExtTranslateTweaks"
+			]
+		},
+		"localized-opengraph": {
+			"class": "MediaWiki\\Extension\\TranslateTweaks\\Hooks\\EmbedTitleHooks",
+			"services": [
+				"ExtensionRegistry",
 				"ExtTranslateTweaks"
 			]
 		}
