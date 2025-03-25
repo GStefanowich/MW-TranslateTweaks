@@ -46,6 +46,7 @@
 
 		"ArticleParserOptions": "search-engines",
 		"ArticlePageDataBefore": "search-engines",
+		"LinksUpdateComplete": "search-engines",
 
 		"BeforeDisplayNoArticleText": "new-contributions",
 
@@ -94,7 +95,8 @@
 			"class": "MediaWiki\\Extension\\TranslateTweaks\\Hooks\\SearchEngineIndexHooks",
 			"services": [
 				"MainConfig",
-				"ExtTranslateTweaks"
+				"ExtTranslateTweaks",
+				"DBLoadBalancerFactory"
 			]
 		},
 		"localized-opengraph": {
