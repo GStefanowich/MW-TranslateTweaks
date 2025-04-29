@@ -103,6 +103,11 @@ class TranslatedSiteNotice {
             return false;
         }
 
+        // Check if the current Title is a TranslatablePage to cache using '/en', '/fr', '/nl', ...etc
+        //   If this is a source page (eg; '/') don't share a cache with the Wiki Language (eg; '/en'),
+        //   can lead to odd linking to '/en' pages
+        $useLanguageCode = str_ends_with( $this->getTitle()->getPrefixedText(), '/' . $language->getCode() );
+
         if ( $name === 'default' ) {
             // special case
             $notice = $config->get( MainConfigNames::SiteNotice );
@@ -119,7 +124,7 @@ class TranslatedSiteNotice {
             }
 
             // Get the translated content
-            $content = $page->getTranslationPage( $language->getCode() )
+            $content = $page->getTranslationPage( $useLanguageCode ? $language->getCode() : 'en' )
                 ->getPageContent( $this->parserFactory->getInstance() );
 
             // If empty, return emptystring
@@ -135,11 +140,6 @@ class TranslatedSiteNotice {
         if ( !$notice ) {
             return false;
         }
-
-        // Check if the current Title is a TranslatablePage to cache using '/en', '/fr', '/nl', ...etc
-        //   If this is a source page (eg; '/') don't share a cache with the Wiki Language (eg; '/en'),
-        //   can lead to odd linking to '/en' pages
-        $useLanguageCode = str_ends_with( $this->getTitle()->getPrefixedText(), '/' . $language->getCode() );
 
         $parsed = $this->cache->getWithSetCallback(
             // Use the extra hash appender to let eg SSL variants separately cache
