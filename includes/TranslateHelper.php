@@ -75,7 +75,7 @@ class TranslateHelper {
      * @return ?string A language code, if the title contains one
      */
     public function getPageLanguage( LinkTarget $title ): ?string {
-        return $this->getPathLanguage( $title->getText() );
+        return $this->getPathLanguage( $title instanceof Title ? $title->getPrefixedText() : $title->getText() );
     }
 
     /**
