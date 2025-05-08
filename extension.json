@@ -125,7 +125,7 @@
 		}
 	},
 	"TrackingCategories": [
-		"translate-tweaks-another-language"
+		"translate-tweaks-another-language-category"
 	],
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\TranslateTweaks\\": "includes/"

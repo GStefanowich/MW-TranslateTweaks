@@ -50,7 +50,7 @@ class TrackingHooks implements \MediaWiki\Hook\ParserAfterTidyHook {
 
                 // Check if the languages are not equal
                 if ( $linkLanguage !== $pageLanguage ) {
-                    $parser->addTrackingCategory( 'translate-tweaks-another-language' );
+                    $parser->addTrackingCategory( 'translate-tweaks-another-language-category' );
                 }
             }
         }
