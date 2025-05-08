@@ -60,7 +60,10 @@
 
 		"OutputPageRenderCategoryLink": "categories",
 		"CategoryViewer::generateLink": "categories",
-		"Collation::factory": "categories"
+		"Collation::factory": "categories",
+
+		"SpecialRandomGetRandomTitle": "special",
+		"SidebarBeforeOutput": "special"
 	},
 	"HookHandlers": {
 		"main": {
@@ -110,6 +113,12 @@
 		},
 		"tracking": {
 			"class": "MediaWiki\\Extension\\TranslateTweaks\\Hooks\\TrackingHooks",
+			"services": [
+				"ExtTranslateTweaks"
+			]
+		},
+		"special": {
+			"class": "MediaWiki\\Extension\\TranslateTweaks\\Hooks\\SpecialHooks",
 			"services": [
 				"ExtTranslateTweaks"
 			]
