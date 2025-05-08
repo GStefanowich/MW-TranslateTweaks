@@ -45,7 +45,7 @@ class TrackingHooks implements \MediaWiki\Hook\ParserAfterTidyHook {
             $link = $result['link'] ?? null;
 
             // Check for title
-            if ( $link instanceof TitleValue ) {
+            if ( $link instanceof TitleValue && !$link->getInterwiki() ) {
                 $linkLanguage = $this->helper->getPageLanguage( $link );
 
                 // Check if the languages are not equal
