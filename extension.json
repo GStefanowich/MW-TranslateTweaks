@@ -62,7 +62,6 @@
 		"CategoryViewer::generateLink": "categories",
 		"Collation::factory": "categories",
 
-		"SpecialRandomGetRandomTitle": "special",
 		"SidebarBeforeOutput": "special"
 	},
 	"HookHandlers": {
