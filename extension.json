@@ -7,7 +7,7 @@
 	"descriptionmsg": "translate-tweaks-ext-description",
 
 	"url": "https://theelm.net/MW-TranslateTweaks",
-	"version": "1.3.0",
+	"version": "1.3.1",
 	"license-name": "MIT",
 
 	"requires": {

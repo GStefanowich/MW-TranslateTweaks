@@ -182,7 +182,8 @@ class TranslatedSiteNotice {
     }
 
     public function getLanguageCode(): ?string {
-        return $this->helper->getPageLanguage( $this->getTitle() );
+        return $this->skin->getLanguageCode()
+            ->toBcp47Code();
     }
 
     public function getOutput(): OutputPage {
