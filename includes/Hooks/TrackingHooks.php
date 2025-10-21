@@ -45,12 +45,26 @@ class TrackingHooks implements \MediaWiki\Hook\ParserAfterTidyHook {
             $link = $result['link'] ?? null;
 
             // Check for title
-            if ( $link instanceof TitleValue && !$link->getInterwiki() ) {
+            if (
+                // Link must be a Title
+                $link instanceof TitleValue
+
+                // Ignore interwikis
+                && !$link->getInterwiki()
+
+                // "Page" should not be a translation-variable (tvar) which won't hold the language code ("$page" will never be "$page/nl")
+                && !str_starts_with($link->getText(), '$')
+            ) {
+                wfDebugLog('TheElm', $link->getText());
+
                 $linkLanguage = $this->helper->getPageLanguage( $link );
 
                 // Check if the languages are not equal
                 if ( $linkLanguage !== $pageLanguage ) {
                     $parser->addTrackingCategory( 'translate-tweaks-another-language-category' );
+
+                    // Break the loop, iterating all links after adding the category is fruitless
+                    break;
                 }
             }
         }
